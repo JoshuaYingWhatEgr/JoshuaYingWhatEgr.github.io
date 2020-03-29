@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="RecyclerView做为一个可以处理大量数据的控件同时也是日常开发中经常需要用到了的控件所以知道它的内部实现原理对于解决一些常见问题还是非常有帮助的，它的内部就是一个自定义的ViewGroup，public class RecyclerView extends ViewGroup implements ScrollingView, NestedScrollingChild2就来看一下它的内部是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RecyclerView源码分析">
+<meta property="og:url" content="http://yoursite.com/2019/02/20/2019-02-20-RecyclerView%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="RecyclerView做为一个可以处理大量数据的控件同时也是日常开发中经常需要用到了的控件所以知道它的内部实现原理对于解决一些常见问题还是非常有帮助的，它的内部就是一个自定义的ViewGroup，public class RecyclerView extends ViewGroup implements ScrollingView, NestedScrollingChild2就来看一下它的内部是">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-02-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-21T04:19:18.832Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/02/20/2019-02-20-RecyclerView源码分析/"/>
+
+
+
+
+
+  <title>RecyclerView源码分析 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/20/2019-02-20-RecyclerView%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">RecyclerView源码分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-20T00:00:00+08:00">
+                2019-02-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>RecyclerView做为一个可以处理大量数据的控件同时也是日常开发中经常需要用到了的控件所以知道它的内部实现原理对于解决一些常见问题还是非常有帮助的，它的内部就是一个自定义的ViewGroup，<code>public class RecyclerView extends ViewGroup implements ScrollingView, NestedScrollingChild2</code>就来看一下它的内部是怎么样自定义这个ViewGroup的，又是怎样处理这些数据和缓存的逻辑等等。</p>
+<h2 id="OnMeasure过程"><a href="#OnMeasure过程" class="headerlink" title="OnMeasure过程"></a>OnMeasure过程</h2><p>既然是一个自定义的ViewGroup所以必然会执行onMeasure方法.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">protected void onMeasure(int widthSpec, int heightSpec) &#123;</span><br><span class="line">    ...</span><br><span class="line">    if (mLayout.mAutoMeasure) &#123;</span><br><span class="line">        final int widthMode &#x3D; MeasureSpec.getMode(widthSpec);</span><br><span class="line">        final int heightMode &#x3D; MeasureSpec.getMode(heightSpec);</span><br><span class="line">        final boolean skipMeasure &#x3D; widthMode &#x3D;&#x3D; MeasureSpec.EXACTLY</span><br><span class="line">                &amp;&amp; heightMode &#x3D;&#x3D; MeasureSpec.EXACTLY;</span><br><span class="line">        mLayout.onMeasure(mRecycler, mState, widthSpec, heightSpec);</span><br><span class="line">        if (skipMeasure || mAdapter &#x3D;&#x3D; null) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">        dispatchLayoutStep2();</span><br><span class="line"></span><br><span class="line">        mLayout.setMeasuredDimensionFromChildren(widthSpec, heightSpec);</span><br><span class="line">        ...</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到mLayout调用了onMeasure方法,而这个mLayout就是一个LayoutManager，是RecyclerView的内部类.所以RecyclrView的onMeasure就是交给了LayoutManager处理.<br>在layoutManager中调用了defaultOnMeasure方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public void onMeasure(@NonNull RecyclerView.Recycler recycler, @NonNull RecyclerView.State state, int widthSpec, int heightSpec) &#123;</span><br><span class="line">      this.mRecyclerView.defaultOnMeasure(widthSpec, heightSpec);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>所以onMeasure方法最后又调用了RecyclerView的defaultOnMeasure.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">void defaultOnMeasure(int widthSpec, int heightSpec) &#123;</span><br><span class="line">   int width &#x3D; RecyclerView.LayoutManager.chooseSize(widthSpec, this.getPaddingLeft() + this.getPaddingRight(), ViewCompat.getMinimumWidth(this));</span><br><span class="line">   int height &#x3D; RecyclerView.LayoutManager.chooseSize(heightSpec, this.getPaddingTop() + this.getPaddingBottom(), ViewCompat.getMinimumHeight(this));</span><br><span class="line">   this.setMeasuredDimension(width, height);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>最后是在defaultOnMeasure中测量了RecyclerView，调用chooseSize方法获取测量大小和测量模式.<br>回到上面接着就是调用了dispatchLayoutStep2.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">private void dispatchLayoutStep2() &#123;</span><br><span class="line">  this.startInterceptRequestLayout();</span><br><span class="line">  this.onEnterLayoutOrScroll();</span><br><span class="line">  this.mState.assertLayoutStep(6);</span><br><span class="line">  this.mAdapterHelper.consumeUpdatesInOnePass();</span><br><span class="line">  this.mState.mItemCount &#x3D; this.mAdapter.getItemCount();</span><br><span class="line">  this.mState.mDeletedInvisibleItemCountSincePreviousLayout &#x3D; 0;</span><br><span class="line">  this.mState.mInPreLayout &#x3D; false;</span><br><span class="line">  this.mLayout.onLayoutChildren(this.mRecycler, this.mState);</span><br><span class="line">  this.mState.mStructureChanged &#x3D; false;</span><br><span class="line">  this.mPendingSavedState &#x3D; null;</span><br><span class="line">  this.mState.mRunSimpleAnimations &#x3D; this.mState.mRunSimpleAnimations &amp;&amp; this.mItemAnimator !&#x3D; null;</span><br><span class="line">  this.mState.mLayoutStep &#x3D; 4;</span><br><span class="line">  this.onExitLayoutOrScroll();</span><br><span class="line">  this.stopInterceptRequestLayout(false);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个里面可以看到有一个this.mLayout.onLayoutChildren的方法,这里就是测量子控件的大小和位置.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) &#123;</span><br><span class="line">    &#x2F;&#x2F; layout algorithm:</span><br><span class="line">    &#x2F;&#x2F; 1) by checking children and other variables, find an anchor coordinate and an anchor</span><br><span class="line">    &#x2F;&#x2F;  item position.</span><br><span class="line">    &#x2F;&#x2F; 2) fill towards start, stacking from bottom</span><br><span class="line">    &#x2F;&#x2F; 3) fill towards end, stacking from top</span><br><span class="line">    &#x2F;&#x2F; 4) scroll to fulfill requirements like stack from bottom.</span><br><span class="line">    ...</span><br><span class="line">    mAnchorInfo.mLayoutFromEnd &#x3D; mShouldReverseLayout ^ mStackFromEnd;</span><br><span class="line">    &#x2F;&#x2F; calculate anchor position and coordinate</span><br><span class="line">    updateAnchorInfoForLayout(recycler, state, mAnchorInfo);</span><br><span class="line">    ...</span><br><span class="line">    if (mAnchorInfo.mLayoutFromEnd) &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        &#x2F;&#x2F; fill towards end</span><br><span class="line">        updateLayoutStateToFillEnd(mAnchorInfo);</span><br><span class="line">        mLayoutState.mExtra &#x3D; extraForEnd;</span><br><span class="line">        fill(recycler, mLayoutState, state, false);</span><br><span class="line">        endOffset &#x3D; mLayoutState.mOffset;</span><br><span class="line">        final int lastElement &#x3D; mLayoutState.mCurrentPosition;</span><br><span class="line">        if (mLayoutState.mAvailable &gt; 0) &#123;</span><br><span class="line">            extraForStart +&#x3D; mLayoutState.mAvailable;</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F; fill towards start</span><br><span class="line">        updateLayoutStateToFillStart(mAnchorInfo);</span><br><span class="line">        mLayoutState.mExtra &#x3D; extraForStart;</span><br><span class="line">        mLayoutState.mCurrentPosition +&#x3D; mLayoutState.mItemDirection;</span><br><span class="line">        fill(recycler, mLayoutState, state, false);</span><br><span class="line">        startOffset &#x3D; mLayoutState.mOffset;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在onLayoutChildren方法中看到了一个fill(填充)方法.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">int fill(RecyclerView.Recycler recycler, LayoutState layoutState,</span><br><span class="line">        RecyclerView.State state, boolean stopOnFocusable) &#123;</span><br><span class="line">    ...</span><br><span class="line">    int remainingSpace &#x3D; layoutState.mAvailable + layoutState.mExtra;</span><br><span class="line">    LayoutChunkResult layoutChunkResult &#x3D; new LayoutChunkResult();</span><br><span class="line">    while (...&amp;&amp;layoutState.hasMore(state)) &#123;</span><br><span class="line">        ...</span><br><span class="line">        layoutChunk(recycler, state, layoutState, layoutChunkResult);</span><br><span class="line"></span><br><span class="line">        ...</span><br><span class="line">        if (...) &#123;</span><br><span class="line">            layoutState.mAvailable -&#x3D; layoutChunkResult.mConsumed;</span><br><span class="line">            remainingSpace -&#x3D; layoutChunkResult.mConsumed;</span><br><span class="line">        &#125;</span><br><span class="line">        if (layoutState.mScrollingOffset !&#x3D; LayoutState.SCOLLING_OFFSET_NaN) &#123;</span><br><span class="line">            layoutState.mScrollingOffset +&#x3D; layoutChunkResult.mConsumed;</span><br><span class="line">            if (layoutState.mAvailable &lt; 0) &#123;</span><br><span class="line">                layoutState.mScrollingOffset +&#x3D; layoutState.mAvailable;</span><br><span class="line">            &#125;</span><br><span class="line">            recycleByLayoutState(recycler, layoutState);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这个方法中有一个重要的layoutChunk方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">void layoutChunk(RecyclerView.Recycler recycler, RecyclerView.State state,</span><br><span class="line">        LayoutState layoutState, LayoutChunkResult result) &#123;</span><br><span class="line">    View view &#x3D; layoutState.next(recycler);</span><br><span class="line">    ...</span><br><span class="line">    if (layoutState.mScrapList &#x3D;&#x3D; null) &#123;</span><br><span class="line">        if (mShouldReverseLayout &#x3D;&#x3D; (layoutState.mLayoutDirection</span><br><span class="line">                &#x3D;&#x3D; LayoutState.LAYOUT_START)) &#123;</span><br><span class="line">            addView(view);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            addView(view, 0);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    measureChildWithMargins(view, 0, 0);</span><br><span class="line">    ...</span><br><span class="line">    &#x2F;&#x2F; We calculate everything with View&#39;s bounding box (which includes decor and margins)</span><br><span class="line">    &#x2F;&#x2F; To calculate correct layout position, we subtract margins.</span><br><span class="line">    layoutDecorated(view, left + params.leftMargin, top + params.topMargin,</span><br><span class="line">            right - params.rightMargin, bottom - params.bottomMargin);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这个里面是真正的执行了获取子View控件并将子View填充到RecyclerView中.layoutState.next方法就是获取adapter中的子控件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">View next(Recycler recycler) &#123;</span><br><span class="line">      if(this.mScrapList !&#x3D; null) &#123;</span><br><span class="line">        return this.nextViewFromScrapList();</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        View view &#x3D; recycler.getViewForPosition(this.mCurrentPosition);</span><br><span class="line">        this.mCurrentPosition +&#x3D; this.mItemDirection;</span><br><span class="line">        return view;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>在这里然后调用了recycler.getViewForPosition和this.tryGetViewHolderForPositionByDeadline。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@NonNull</span><br><span class="line">   public View getViewForPosition(int position) &#123;</span><br><span class="line">     return this.getViewForPosition(position, false);</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">   View getViewForPosition(int position, boolean dryRun) &#123;</span><br><span class="line">     return this.tryGetViewHolderForPositionByDeadline(position, dryRun, 9223372036854775807L).itemView;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@Nullable</span><br><span class="line">   RecyclerView.ViewHolder tryGetViewHolderForPositionByDeadline(int position, boolean dryRun, long deadlineNs) &#123;</span><br><span class="line">           holder &#x3D; RecyclerView.this.mAdapter.createViewHolder(RecyclerView.this, type);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>在这里看到了非常熟悉的createViewHolder，这个时候就和Adapter关联起来了.获取到了item的View后就将调用addView将它添加到RecyclerView中.<br>获取完view后接着调用了measureChildWithMargins方法.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public void measureChildWithMargins(@NonNull View child, int widthUsed, int heightUsed) &#123;</span><br><span class="line">      RecyclerView.LayoutParams lp &#x3D; (RecyclerView.LayoutParams)child.getLayoutParams();</span><br><span class="line">      Rect insets &#x3D; this.mRecyclerView.getItemDecorInsetsForChild(child);</span><br><span class="line">      widthUsed +&#x3D; insets.left + insets.right;</span><br><span class="line">      heightUsed +&#x3D; insets.top + insets.bottom;</span><br><span class="line">      int widthSpec &#x3D; getChildMeasureSpec(this.getWidth(), this.getWidthMode(), this.getPaddingLeft() + this.getPaddingRight() + lp.leftMargin + lp.rightMargin + widthUsed, lp.width, this.canScrollHorizontally());</span><br><span class="line">      int heightSpec &#x3D; getChildMeasureSpec(this.getHeight(), this.getHeightMode(), this.getPaddingTop() + this.getPaddingBottom() + lp.topMargin + lp.bottomMargin + heightUsed, lp.height, this.canScrollVertically());</span><br><span class="line">      if(this.shouldMeasureChild(child, widthSpec, heightSpec, lp)) &#123;</span><br><span class="line">        child.measure(widthSpec, heightSpec);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>在这个方法中就是测量每个item的大小和分割线的大小.<br>在onMeasure方法中我们测量了recyclerview的大小和item的大小并将其添加到了recyclerview中.<br>接下来看一下RecyclerView的onLayout方法.</p>
+<h2 id="onLayout"><a href="#onLayout" class="headerlink" title="onLayout"></a>onLayout</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">protected void onLayout(boolean changed, int l, int t, int r, int b) &#123;</span><br><span class="line">    TraceCompat.beginSection(&quot;RV OnLayout&quot;);</span><br><span class="line">    this.dispatchLayout();</span><br><span class="line">    TraceCompat.endSection();</span><br><span class="line">    this.mFirstLayoutComplete &#x3D; true;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>在onLayout中还是调用了dispatchLayout方法，最后还是调用了dispatchLayoutStep2方法.</p>
+<h2 id="onDraw"><a href="#onDraw" class="headerlink" title="onDraw"></a>onDraw</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void draw(Canvas c) &#123;</span><br><span class="line">    super.draw(c);</span><br><span class="line"></span><br><span class="line">    final int count &#x3D; mItemDecorations.size();</span><br><span class="line">    for (int i &#x3D; 0; i &lt; count; i++) &#123;</span><br><span class="line">        mItemDecorations.get(i).onDrawOver(c, this, mState);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Override</span><br><span class="line">public void onDraw(Canvas c) &#123;</span><br><span class="line">    super.onDraw(c);</span><br><span class="line"></span><br><span class="line">    final int count &#x3D; mItemDecorations.size();</span><br><span class="line">    for (int i &#x3D; 0; i &lt; count; i++) &#123;</span><br><span class="line">        mItemDecorations.get(i).onDraw(c, this, mState);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这里除了绘制自身以外还绘制了分割线.</p>
+<h2 id="滑动"><a href="#滑动" class="headerlink" title="滑动"></a>滑动</h2><p>RecyclerView的滑动有两个过程，一个是手指在屏幕滑动的过程(scroll)，另一个是手指滑动离开屏幕的过程(fling).<br>RecyclerView的滑动是从onTouchEvent开始.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">public boolean onTouchEvent(MotionEvent e) &#123;</span><br><span class="line">    ...</span><br><span class="line">    if (mVelocityTracker &#x3D;&#x3D; null) &#123;</span><br><span class="line">        mVelocityTracker &#x3D; VelocityTracker.obtain();</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    switch (action) &#123;</span><br><span class="line">        ...</span><br><span class="line">        case MotionEvent.ACTION_MOVE: &#123;</span><br><span class="line">            ...</span><br><span class="line">            final int x &#x3D; (int) (MotionEventCompat.getX(e, index) + 0.5f);</span><br><span class="line">            final int y &#x3D; (int) (MotionEventCompat.getY(e, index) + 0.5f);</span><br><span class="line">            int dx &#x3D; mLastTouchX - x;</span><br><span class="line">            int dy &#x3D; mLastTouchY - y;</span><br><span class="line">            ...</span><br><span class="line">            if (mScrollState !&#x3D; SCROLL_STATE_DRAGGING) &#123;</span><br><span class="line">                ...</span><br><span class="line">                if (canScrollVertically &amp;&amp; Math.abs(dy) &gt; mTouchSlop) &#123;</span><br><span class="line">                    if (dy &gt; 0) &#123;</span><br><span class="line">                        dy -&#x3D; mTouchSlop;</span><br><span class="line">                    &#125; else &#123;</span><br><span class="line">                        dy +&#x3D; mTouchSlop;</span><br><span class="line">                    &#125;</span><br><span class="line">                    startScroll &#x3D; true;</span><br><span class="line">                &#125;</span><br><span class="line">                if (startScroll) &#123;</span><br><span class="line">                    setScrollState(SCROLL_STATE_DRAGGING);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            if (mScrollState &#x3D;&#x3D; SCROLL_STATE_DRAGGING) &#123;</span><br><span class="line">                mLastTouchX &#x3D; x - mScrollOffset[0];</span><br><span class="line">                mLastTouchY &#x3D; y - mScrollOffset[1];</span><br><span class="line"></span><br><span class="line">                if (scrollByInternal(</span><br><span class="line">                        canScrollHorizontally ? dx : 0,</span><br><span class="line">                        canScrollVertically ? dy : 0,</span><br><span class="line">                        vtev)) &#123;</span><br><span class="line">                    getParent().requestDisallowInterceptTouchEvent(true);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; break;</span><br><span class="line">        ...</span><br><span class="line">        case MotionEvent.ACTION_UP: &#123;</span><br><span class="line">            ...</span><br><span class="line">            final float yvel &#x3D; canScrollVertically ?</span><br><span class="line">                    -VelocityTrackerCompat.getYVelocity(mVelocityTracker, mScrollPointerId) : 0;</span><br><span class="line">            if (!((xvel !&#x3D; 0 || yvel !&#x3D; 0) &amp;&amp; fling((int) xvel, (int) yvel))) &#123;</span><br><span class="line">                setScrollState(SCROLL_STATE_IDLE);</span><br><span class="line">            &#125;</span><br><span class="line">            resetTouch();</span><br><span class="line">        &#125; break;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里首先确定滑动的偏移量大于系统的滑动值，然后就将滑动状态设置为SCROLL_STATE_DRAGGING，然后执行scrollByInternal()方法，而在这个方法里面最终回去调用LinearLayoutManager.scrollBy()，这是RecyclerView滑动的第一阶段.当手指离开屏幕后MotionEvent.ACTION_UP或者MotionAction.Cancel就会执行，在MotionEvent.ACTION_UP中首先会去计算当前滑动的速度，然后调用fling()方法，在这里就是滑动的第二阶段,然后将滑动状态设置为SCROLL_STATE_IDLE.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public boolean fling(int velocityX, int velocityY) &#123;</span><br><span class="line">    ...</span><br><span class="line">    mViewFlinger.fling(velocityX, velocityY);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在fling方法中，又回执行mViewFlinger，而这个mViewFlinger是一个Runnable对象。它的fling方法实现如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">void postOnAnimation() &#123;</span><br><span class="line">    if (mEatRunOnAnimationRequest) &#123;</span><br><span class="line">        mReSchedulePostAnimationCallback &#x3D; true;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        removeCallbacks(this);</span><br><span class="line">        ViewCompat.postOnAnimation(RecyclerView.this, this);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void fling(int velocityX, int velocityY) &#123;</span><br><span class="line">    setScrollState(SCROLL_STATE_SETTLING);</span><br><span class="line">    mLastFlingX &#x3D; mLastFlingY &#x3D; 0;</span><br><span class="line">    mScroller.fling(0, 0, velocityX, velocityY,</span><br><span class="line">            Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);</span><br><span class="line">    postOnAnimation();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这里回去调用Scroller的fling方法，然后在postOnAnimation某时刻会去执行我们给定的Runnable对象.<br>mViewFlinger.run()方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">public void run() &#123;</span><br><span class="line">    ...</span><br><span class="line">    if (scroller.computeScrollOffset()) &#123;</span><br><span class="line">        final int x &#x3D; scroller.getCurrX();</span><br><span class="line">        final int y &#x3D; scroller.getCurrY();</span><br><span class="line">        final int dx &#x3D; x - mLastFlingX;</span><br><span class="line">        final int dy &#x3D; y - mLastFlingY;</span><br><span class="line">        ...</span><br><span class="line">        if (mAdapter !&#x3D; null) &#123;</span><br><span class="line">            ...</span><br><span class="line">            if (dy !&#x3D; 0) &#123;</span><br><span class="line">                vresult &#x3D; mLayout.scrollVerticallyBy(dy, mRecycler, mState);</span><br><span class="line">                overscrollY &#x3D; dy - vresult;</span><br><span class="line">            &#125;</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">        if (!awakenScrollBars()) &#123;</span><br><span class="line">            invalidate();&#x2F;&#x2F;刷新界面</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">        if (scroller.isFinished() || !fullyConsumedAny) &#123;</span><br><span class="line">            setScrollState(SCROLL_STATE_IDLE);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            postOnAnimation();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到这里最后也是调用了mLayout.scrollVerticallyBy方法,最后也是执行到LinearLayoutManager.scrollBy()方法.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">int scrollBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) &#123;</span><br><span class="line">    ...</span><br><span class="line">    final int absDy &#x3D; Math.abs(dy);</span><br><span class="line">    updateLayoutState(layoutDirection, absDy, true, state);</span><br><span class="line">    final int consumed &#x3D; mLayoutState.mScrollingOffset</span><br><span class="line">            + fill(recycler, mLayoutState, state, false);</span><br><span class="line">    ...</span><br><span class="line">    final int scrolled &#x3D; absDy &gt; consumed ? layoutDirection * consumed : dy;</span><br><span class="line">    mOrientationHelper.offsetChildren(-scrolled);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在LinearLayoutManager.scrollBy()方法中首先会调用fill()方法将我们需要显示并且要填充的item加入进来，然后计算出一个consumed偏移量，最后调用mOrientationHelper.offsetChildren()方法计算出需要的滑动偏移量,也就是平移item.</p>
+<h2 id="RecyclerView回收复用之Recycler"><a href="#RecyclerView回收复用之Recycler" class="headerlink" title="RecyclerView回收复用之Recycler"></a>RecyclerView回收复用之Recycler</h2><p>Recycler是RecyclerView的缓存器</p>
+<p><code>public final class Recycler {
+        final ArrayList&lt;ViewHolder&gt; mAttachedScrap = new ArrayList&lt;&gt;();
+        ArrayList&lt;ViewHolder&gt; mChangedScrap = null;
+        final ArrayList&lt;ViewHolder&gt; mCachedViews = new ArrayList&lt;ViewHolder&gt;();
+private final List&lt;ViewHolder&gt;
+                mUnmodifiableAttachedScrap = Collections.unmodifiableList(mAttachedScrap);
+        private int mRequestedCacheMax = DEFAULT_CACHE_SIZE;
+        int mViewCacheMax = DEFAULT_CACHE_SIZE;
+        RecycledViewPool mRecyclerPool;
+        private ViewCacheExtension mViewCacheExtension;}</code><br>这个Recycler的作用就是重用itemview，当然重用的item是从它的缓存中获取到。在上面fill方法中有一个layoutChunk方法在这方法中的View view = layoutState.next(recycler);就是获取itemview的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">    ViewHolder tryGetViewHolderForPositionByDeadline(int position,</span><br><span class="line">            boolean dryRun, long deadlineNs) &#123;</span><br><span class="line">           ...</span><br><span class="line">&#x2F;&#x2F; 0) If there is a changed scrap, try to find from there</span><br><span class="line">if (mState.isPreLayout()) &#123;</span><br><span class="line">    holder &#x3D; getChangedScrapViewForPosition(position);</span><br><span class="line">    fromScrap &#x3D; holder !&#x3D; null;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F; 1) Find from scrap by position</span><br><span class="line">if (holder &#x3D;&#x3D; null) &#123;</span><br><span class="line">    holder &#x3D; getScrapViewForPosition(position, INVALID_TYPE, dryRun);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line">if (holder &#x3D;&#x3D; null) &#123;</span><br><span class="line">    ...</span><br><span class="line">    &#x2F;&#x2F; 2) Find from scrap via stable ids, if exists</span><br><span class="line">    if (mAdapter.hasStableIds()) &#123;</span><br><span class="line">        holder &#x3D; getScrapViewForId(mAdapter.getItemId(offsetPosition), type, dryRun);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    if (holder &#x3D;&#x3D; null &amp;&amp; mViewCacheExtension !&#x3D; null) &#123;</span><br><span class="line">        final View view &#x3D; mViewCacheExtension</span><br><span class="line">                .getViewForPositionAndType(this, position, type);</span><br><span class="line">        if (view !&#x3D; null) &#123;</span><br><span class="line">            holder &#x3D; getChildViewHolder(view);</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    if (holder &#x3D;&#x3D; null) &#123;</span><br><span class="line">        ...</span><br><span class="line">        holder &#x3D; getRecycledViewPool().getRecycledView(type);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    if (holder &#x3D;&#x3D; null) &#123;</span><br><span class="line">        holder &#x3D; mAdapter.createViewHolder(RecyclerView.this, type);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br><span class="line">boolean bound &#x3D; false;</span><br><span class="line">if (mState.isPreLayout() &amp;&amp; holder.isBound()) &#123;</span><br><span class="line">    &#x2F;&#x2F; do not update unless we absolutely have to.</span><br><span class="line">    holder.mPreLayoutPosition &#x3D; position;</span><br><span class="line">&#125; else if (!holder.isBound() || holder.needsUpdate() || holder.isInvalid()) &#123;</span><br><span class="line">    ...</span><br><span class="line">    mAdapter.bindViewHolder(holder, offsetPosition);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line">...</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法会先从Scrap，Cache，Recycled从找需要的itemview如果没有就会调用mAdapter.createViewHolder方法创建一个itemview方法。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/20/2019-01-20-RecyclerView%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/" rel="next" title="RecyclerView常见问题">
+                <i class="fa fa-chevron-left"></i> RecyclerView常见问题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/10/2019-03-10-Fragment%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/" rel="prev" title="Fragment常见问题分析">
+                Fragment常见问题分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="John Doe" />
+          <p class="site-author-name" itemprop="name">John Doe</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">48</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">tags</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#OnMeasure过程"><span class="nav-number">1.</span> <span class="nav-text">OnMeasure过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#onLayout"><span class="nav-number">2.</span> <span class="nav-text">onLayout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#onDraw"><span class="nav-number">3.</span> <span class="nav-text">onDraw</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#滑动"><span class="nav-number">4.</span> <span class="nav-text">滑动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RecyclerView回收复用之Recycler"><span class="nav-number">5.</span> <span class="nav-text">RecyclerView回收复用之Recycler</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

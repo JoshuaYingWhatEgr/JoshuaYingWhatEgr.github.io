@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Android Fragment中文翻译为片段。从字面意思可以知道这个就是应用中的一个UI片段，它有自己的生命周期和创建方式。Fragment的出现最初主要是为了实现在大屏幕上 例如：平板的显示提供更加灵活的支持。Fragment必须要基于Activity出现，它不能单独实现自己所以它的生命周期受宿主Activity的影响,当Activity暂停时Fragment也会暂停，当Activity被销毁">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Fragment基础">
+<meta property="og:url" content="http://yoursite.com/2019/09/05/2019-09-05-Android%20Fragment%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Android Fragment中文翻译为片段。从字面意思可以知道这个就是应用中的一个UI片段，它有自己的生命周期和创建方式。Fragment的出现最初主要是为了实现在大屏幕上 例如：平板的显示提供更加灵活的支持。Fragment必须要基于Activity出现，它不能单独实现自己所以它的生命周期受宿主Activity的影响,当Activity暂停时Fragment也会暂停，当Activity被销毁">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-09-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-21T04:19:18.834Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/09/05/2019-09-05-Android Fragment基础/"/>
+
+
+
+
+
+  <title>Android Fragment基础 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/05/2019-09-05-Android%20Fragment%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android Fragment基础</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-05T00:00:00+08:00">
+                2019-09-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Android Fragment中文翻译为片段。从字面意思可以知道这个就是应用中的一个UI片段，它有自己的生命周期和创建方式。Fragment的出现最初主要是为了实现在大屏幕上 例如：平板的显示提供更加灵活的支持。<br><strong>Fragment必须要基于Activity出现，它不能单独实现自己所以它的生命周期受宿主Activity的影响,当Activity暂停时Fragment也会暂停，当Activity被销毁时Fragment也会被销毁</strong></p>
+<h2 id="创建Fragment"><a href="#创建Fragment" class="headerlink" title="创建Fragment"></a>创建Fragment</h2><p>Fragment的创建可以通过两种方式创建一种是在Activity的xml布局文件中编写xml代码，另外一种方式就是通过代码的方式创建.</p>
+<ul>
+<li>通过xml布局的方式创建Fragment：<br>1.首先创建Fragment的实现类</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class MyFragment extends Fragment &#123;</span><br><span class="line">    @Nullable</span><br><span class="line">    @Override</span><br><span class="line">    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) &#123;</span><br><span class="line">        return inflater.inflate(R.layout.my_fragment, container, false);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在onCreateView中调用了inflater的inflate方法里面有三个参数，第一个是当前Fragment的布局文件，第二个是一个viewGroup，这里的ViewGroup就是与它关联的Activity，而第三个参数是一个boolean值，设置的是一个false.它的意思是当前布局不与container关联，因为我们在事务transaction中会调用add方法进行关联,如果这里设置为true那么就会关联两次就会有两个重复的布局抛出异常:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Caused by: java.lang.IllegalStateException: The specified child already has a parent. You must call removeView() on the child&#39;s parent first.</span><br></pre></td></tr></table></figure>
+
+<p>2.然后在Activity的xml布局中引用这个MyFragment:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;LinearLayout</span><br><span class="line">    android:id&#x3D;&quot;@+id&#x2F;add_fragment&quot;</span><br><span class="line">    android:layout_width&#x3D;&quot;match_parent&quot;</span><br><span class="line">    android:layout_height&#x3D;&quot;match_parent&quot;</span><br><span class="line">    android:orientation&#x3D;&quot;vertical&quot;&gt;</span><br><span class="line">    &lt;fragment</span><br><span class="line">        android:layout_width&#x3D;&quot;match_parent&quot;</span><br><span class="line">        android:layout_height&#x3D;&quot;match_parent&quot;</span><br><span class="line">        android:name&#x3D;&quot;com.example.myapplication.MyFragment&quot;</span><br><span class="line">        &#x2F;&gt;</span><br><span class="line">&lt;&#x2F;LinearLayout&gt;</span><br></pre></td></tr></table></figure>
+<p>然后运行程序，这个Fragment就加载到Activity中了.</p>
+<ul>
+<li>通过代码的方式添加Fragment:</li>
+</ul>
+<p>1.首先需要创建一个Fragment的类:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class MyFragment extends Fragment &#123;</span><br><span class="line">    @Nullable</span><br><span class="line">    @Override</span><br><span class="line">    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) &#123;</span><br><span class="line">        return inflater.inflate(R.layout.my_fragment, container, false);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>2.然后在Activity中创建一个transaction事务，然后再创建Fragment对象，最后通过add的方式将这个Fragment提交.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">transaction &#x3D; getSupportFragmentManager().beginTransaction();</span><br><span class="line">        if (myFragment &#x3D;&#x3D; null) &#123;</span><br><span class="line">            myFragment &#x3D; new MyFragment();</span><br><span class="line">            transaction.add(R.id.add_fragment, myFragment).commit();</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>在transaction中看到需要两个参数，第一个参数就是一个id而这个id就是在Activity的xml布局文件中指定的id，第二个参数就是Fragment对象，这个的意思就是将这个Fragment的对象添加到我们指定的id布局中，最后要commit提交这样一个Fragment才正式被添加到了Activity中.</p>
+<h2 id="Fragment与Activity之间的通讯"><a href="#Fragment与Activity之间的通讯" class="headerlink" title="Fragment与Activity之间的通讯"></a>Fragment与Activity之间的通讯</h2><ul>
+<li>Activity与Fragment通讯:</li>
+</ul>
+<p>1.Fragment中有一个onAttach方法：、</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void onAttach(Context context) &#123;</span><br><span class="line">    super.onAttach(context);</span><br><span class="line">    context &#x3D; (MainActivity) context;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这里我们可以将context强制转换成MainActivity,然后就可以调用我们在Activiy中定义的方法了.<br>2.通过Bundle方式<br>当我们在Activity创建Fragment对象后可以通过调用Bundle传递数据(Bundle只能put基本数据类型或序列化数据)到Fragment中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if (myFragment &#x3D;&#x3D; null) &#123;</span><br><span class="line">           myFragment &#x3D; new MyFragment();</span><br><span class="line">           Bundle bundle &#x3D; new Bundle();</span><br><span class="line">           bundle.putString(&quot;key&quot;,&quot;value&quot;);</span><br><span class="line">           myFragment.setArguments(bundle);</span><br><span class="line">           transaction.add(R.id.add_fragment, myFragment).commit();</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+<p>这样就将一个数据发送给了Fragment.</p>
+<ul>
+<li>Fragment与Activity通讯：<br>在Fragment中编写一个接口,然后对外提供一个方法。在Activity中调用这个方法实现这个接口.</li>
+</ul>
+<h2 id="Fragment的生命周期"><a href="#Fragment的生命周期" class="headerlink" title="Fragment的生命周期"></a>Fragment的生命周期</h2><p>1.onAttach:Fragment和Activity关联时会被调用,在这个方法中我们可以获取Activity的引用，通过getArgument方法获取Activity传过来的数据.</p>
+<p>2.onCreate:Fragment被创建时调用.</p>
+<p>3.onCreateView:创建Fragment的布局</p>
+<p>4.onActivityCreated:当Activity完成onCreate时调用</p>
+<p>5.onStart：当Fragment可见时调用</p>
+<p>6.onResume:当Fragment可见并且可交互时调用</p>
+<p>7.onPause:当Fragment可见但不可交互时调用</p>
+<p>8.onStop：当Fragment不可见时调用</p>
+<p>9.onDestoryView：当Fragment的UI从视图结构中移除时调用</p>
+<p>10.onDestory:销毁Fragment时调用</p>
+<p>11.onDetach:当Fragment和Activity解除关联时调用</p>
+<p>上述方法中除了onCreateView不需要super方法外，其他方法都需要</p>
+<h2 id="Fragment回退栈BackStack"><a href="#Fragment回退栈BackStack" class="headerlink" title="Fragment回退栈BackStack"></a>Fragment回退栈BackStack</h2><p>Fragment有自己的回退栈，给一个Fragment添加回退栈则可以掉用：addToBackStack(“”).<br>如果加入了回退栈当用户点击返回按键时会回滚Fragment事务，如果没有加入回退栈按返回键则直接将Activity出栈。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">transaction.add(R.id.add_fragment, myFragment).addToBackStack(&quot;myfragment&quot;).commit();</span><br></pre></td></tr></table></figure>
+<p>addToBackStack:将Fragment添加到回退栈中.<br>popBackstack:清除栈顶中的Fragment<br>popBackStack(String tag,int i): 如果i=0,回退到该tag所对应的Fragment层;如果i=FragmentManager.POP_BACK_STACK_INCLUSIVE,回退到该tag所对应的Fragment的上一层<br>popBackStackImmediate:立即清除回退栈中栈顶的Fragment.<br>getBackStackEntryCount:获取回退栈中Fragment的个数.<br>getBackStackEntryAt(int index):获取回退栈中该索引值下的Fragment.<br><strong>示例：</strong><br>模拟京东的回退栈效果，当点击了其他的Fragment时按返回键退出到第一个Fragment.<br>##Fragment回退栈出现的问题<br>当我们将Fragment加入到回退栈时,这个时候按返回键进行操作回到第一个Fragment然后继续点击其他的Fragment时这个时候当前的Fragment的view会remove掉,f.mContainer.removeView(f.mView).<br>原因:当我们是以add方式入栈的时候，此时Fragment的状态为RESUMED，则moveToState将不进行操作；当我们以replace方式入栈，Fragment的状态为INITIALIZING，此时在moveToState中又会重新将此Fragment创建一次，重新走一遍创建时的生命周期。</p>
+<h2 id="DialogFragment"><a href="#DialogFragment" class="headerlink" title="DialogFragment"></a>DialogFragment</h2><p>DialogFragment是专门用于处理对话框逻辑的功能，它与AlertDialog和Dialog的区别就是当用户旋转屏幕了之后AlertDialog和Dialog会销毁掉同时如果有数据输入的话数据也会销毁，而DialogFragment则不会同时也可以很好的管理其生命周期.<br>示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;RelativeLayout xmlns:android&#x3D;&quot;http:&#x2F;&#x2F;schemas.android.com&#x2F;apk&#x2F;res&#x2F;android&quot;</span><br><span class="line">    android:layout_width&#x3D;&quot;wrap_content&quot;</span><br><span class="line">    android:background&#x3D;&quot;@color&#x2F;colorPrimary&quot;</span><br><span class="line">    android:layout_height&#x3D;&quot;wrap_content&quot;&gt;</span><br><span class="line"></span><br><span class="line">    &lt;TextView</span><br><span class="line">        android:layout_width&#x3D;&quot;300dp&quot;</span><br><span class="line">        android:layout_height&#x3D;&quot;300dp&quot;</span><br><span class="line">        android:layout_centerInParent&#x3D;&quot;true&quot;</span><br><span class="line">        android:text&#x3D;&quot;DialogFragment&quot;</span><br><span class="line">        android:textStyle&#x3D;&quot;bold&quot; &#x2F;&gt;</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;RelativeLayout&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class DialogFragment extends android.support.v4.app.DialogFragment &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Nullable</span><br><span class="line">    @Override</span><br><span class="line">    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) &#123;</span><br><span class="line">        return inflater.inflate(R.layout.fragment_dialog_view,container);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) &#123;</span><br><span class="line">        super.onViewCreated(view, savedInstanceState);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> @Override</span><br><span class="line">    public void onClick(View v) &#123;</span><br><span class="line">        DialogFragment dialogFragment &#x3D; new DialogFragment();</span><br><span class="line">        dialogFragment.show(getSupportFragmentManager(),&quot;dialog_fragment&quot;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>有些时候我们在设置DialogFragment固定布局的时候不是想要的效果,这个时候可以通过Fragment的onStart方法设置解决这个问题.具体使用方式如下:<br>示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void onStart() &#123;</span><br><span class="line">    super.onStart();</span><br><span class="line">    Dialog dialog &#x3D; getDialog();</span><br><span class="line">    if (dialog !&#x3D; null) &#123;</span><br><span class="line">        Window window &#x3D; dialog.getWindow();</span><br><span class="line">        WindowManager.LayoutParams attributes &#x3D; window.getAttributes();</span><br><span class="line">        attributes.width &#x3D; getResources().getDimensionPixelSize(R.dimen.width_400);</span><br><span class="line">        attributes.height &#x3D; getResources().getDimensionPixelSize(R.dimen.height_500);</span><br><span class="line">        window.setAttributes(attributes);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>##为什么需要在onStart后修改Dialog布局才有效<br>只有dialogFragment执行到onStart之后才会调用mDialog.show()显示弹框，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">   public void onStart() &#123;</span><br><span class="line">       super.onStart();</span><br><span class="line">       if (mDialog !&#x3D; null) &#123;</span><br><span class="line">           mViewDestroyed &#x3D; false;</span><br><span class="line">           mDialog.show();</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>接下来看一看dialog.show的源码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public void show() &#123;</span><br><span class="line">        if (mShowing) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        if (!mCreated) &#123;</span><br><span class="line">            dispatchOnCreate(null);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">        &#125;</span><br><span class="line">    mWindowManager.addView(mDecor, l);    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码中如果dialog还没有创建就执行dispatchOnCreate(null)方法来创建dialog布局</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"> void dispatchOnCreate(Bundle savedInstanceState) &#123;</span><br><span class="line">        if (!mCreated) &#123;</span><br><span class="line">            mDialog.setContentView(selectContentView());</span><br><span class="line">            mCreated &#x3D; true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#x2F;&#x2F;获取相应的布局样式</span><br><span class="line">    private int selectContentView() &#123;</span><br><span class="line">        if (mButtonPanelSideLayout &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            return mAlertDialogLayout;</span><br><span class="line">        &#125;</span><br><span class="line">        if (mButtonPanelLayoutHint &#x3D;&#x3D; AlertDialog.LAYOUT_HINT_SIDE) &#123;</span><br><span class="line">            recaiturn mButtonPanelSideLayout;</span><br><span class="line">        &#125;</span><br><span class="line">        return mAlertDialogLayout;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>在这里mDialog会通过selectContentView获取系统布局然后设置到setContentView中，所以在show之前如果我们自定义了dialog的宽高都是无效的，最后还是会在show中被覆盖成系统自带的格式。<br><strong>所以只有在show后面改变布局的属性才会有效</strong></p>
+<h2 id="Fragment懒加载"><a href="#Fragment懒加载" class="headerlink" title="Fragment懒加载"></a>Fragment懒加载</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * @author joshuayingwhat</span><br><span class="line"> *&#x2F;</span><br><span class="line">public abstract class BaseLazyFragment extends Fragment &#123;</span><br><span class="line"></span><br><span class="line">    protected boolean isViewCreated;</span><br><span class="line"></span><br><span class="line">    protected boolean isVisibleToUser;</span><br><span class="line"></span><br><span class="line">    protected boolean isDataInited;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onAttach(Context context) &#123;</span><br><span class="line">        super.onAttach(context);</span><br><span class="line">        Log.e(&quot;Tag&quot;, &quot;------onAttach------&quot; + (isViewCreated));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onCreate(@Nullable Bundle savedInstanceState) &#123;</span><br><span class="line">        super.onCreate(savedInstanceState);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) &#123;</span><br><span class="line">        super.onViewCreated(view, savedInstanceState);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onActivityCreated(@Nullable Bundle savedInstanceState) &#123;</span><br><span class="line">        super.onActivityCreated(savedInstanceState);</span><br><span class="line">        isViewCreated &#x3D; true;</span><br><span class="line">        prepareFetchData();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void prepareFetchData() &#123;</span><br><span class="line">        prepareFetchData(false);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * @param fetchdata</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public void prepareFetchData(boolean fetchdata) &#123;</span><br><span class="line">        &#x2F;&#x2F;每次都加载数据</span><br><span class="line">        if (isVisibleToUser &amp;&amp; isViewCreated &amp;&amp; (!isDataInited || fetchdata)) &#123;</span><br><span class="line">            fetchdata();</span><br><span class="line">            isDataInited &#x3D; true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    protected abstract void fetchdata();</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void setUserVisibleHint(boolean isVisibleToUser) &#123;</span><br><span class="line">        super.setUserVisibleHint(isVisibleToUser);</span><br><span class="line">        this.isVisibleToUser &#x3D; isVisibleToUser;</span><br><span class="line">        prepareFetchData();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Fragment中<strong>setUserVisibleHint</strong>方法表示是否显示,当Fragment是否显示或者不显示通过isVisibleToUser表示。<br>当Fragment UI被创建时，同时isVisibleToUser Fragment已经显示，这个时候执行加载数据的操作。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/03/2019-01-16-HandlerThread%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8%E5%92%8C%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/" rel="next" title="HandlerThread简单使用和原理分析">
+                <i class="fa fa-chevron-left"></i> HandlerThread简单使用和原理分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/28/2019-09-28-Android%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6/" rel="prev" title="Android事件分发机制">
+                Android事件分发机制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="John Doe" />
+          <p class="site-author-name" itemprop="name">John Doe</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">48</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">tags</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建Fragment"><span class="nav-number">1.</span> <span class="nav-text">创建Fragment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fragment与Activity之间的通讯"><span class="nav-number">2.</span> <span class="nav-text">Fragment与Activity之间的通讯</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fragment的生命周期"><span class="nav-number">3.</span> <span class="nav-text">Fragment的生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fragment回退栈BackStack"><span class="nav-number">4.</span> <span class="nav-text">Fragment回退栈BackStack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DialogFragment"><span class="nav-number">5.</span> <span class="nav-text">DialogFragment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fragment懒加载"><span class="nav-number">6.</span> <span class="nav-text">Fragment懒加载</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

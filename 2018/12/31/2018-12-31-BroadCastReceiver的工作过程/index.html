@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="广播的注册过程Android广播的动态注册过程都会调用registerRecivier.而registerReceiver方法是在ContextWrapper中. 12345@Overridepublic Intent registerReceiver(    BroadcastReceiver receiver, IntentFilter filter) &amp;#123;    return mBa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BroadCastReceiver的工作过程">
+<meta property="og:url" content="http://yoursite.com/2018/12/31/2018-12-31-BroadCastReceiver%E7%9A%84%E5%B7%A5%E4%BD%9C%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="广播的注册过程Android广播的动态注册过程都会调用registerRecivier.而registerReceiver方法是在ContextWrapper中. 12345@Overridepublic Intent registerReceiver(    BroadcastReceiver receiver, IntentFilter filter) &amp;#123;    return mBa">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2018-12-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-21T04:19:18.831Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/12/31/2018-12-31-BroadCastReceiver的工作过程/"/>
+
+
+
+
+
+  <title>BroadCastReceiver的工作过程 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/31/2018-12-31-BroadCastReceiver%E7%9A%84%E5%B7%A5%E4%BD%9C%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">BroadCastReceiver的工作过程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-31T00:00:00+08:00">
+                2018-12-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="广播的注册过程"><a href="#广播的注册过程" class="headerlink" title="广播的注册过程"></a>广播的注册过程</h2><p>Android广播的动态注册过程都会调用registerRecivier.<br>而registerReceiver方法是在ContextWrapper中.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public Intent registerReceiver(</span><br><span class="line">    BroadcastReceiver receiver, IntentFilter filter) &#123;</span><br><span class="line">    return mBase.registerReceiver(receiver, filter);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这里mBase是一个ContenxtImpl，所以广播的动态注册又到了ContextImpl中。在ContextImpl中有很多的重载方法，但是都会执行registerReceiverInternal方法.</p>
+<figure class="highlight plain"><figcaption><span>Intent registerReceiverInternal(BroadcastReceiver receiver, int userId,</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">    IntentFilter filter, String broadcastPermission,</span><br><span class="line">    Handler scheduler, Context context) &#123;</span><br><span class="line">IIntentReceiver rd &#x3D; null;</span><br><span class="line">if (receiver !&#x3D; null) &#123;</span><br><span class="line">    if (mPackageInfo !&#x3D; null &amp;&amp; context !&#x3D; null) &#123;&#x2F;&#x2F;1</span><br><span class="line">        if (scheduler &#x3D;&#x3D; null) &#123;</span><br><span class="line">            scheduler &#x3D; mMainThread.getHandler();</span><br><span class="line">        &#125;</span><br><span class="line">        rd &#x3D; mPackageInfo.getReceiverDispatcher(</span><br><span class="line">            receiver, context, scheduler,</span><br><span class="line">            mMainThread.getInstrumentation(), true);&#x2F;&#x2F;2</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        if (scheduler &#x3D;&#x3D; null) &#123;</span><br><span class="line">            scheduler &#x3D; mMainThread.getHandler();</span><br><span class="line">        &#125;</span><br><span class="line">        rd &#x3D; new LoadedApk.ReceiverDispatcher(</span><br><span class="line">                receiver, context, scheduler, null, true).getIIntentReceiver();&#x2F;&#x2F;3</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">try &#123;</span><br><span class="line">    final Intent intent &#x3D; ActivityManagerNative.getDefault().registerReceiver(</span><br><span class="line">            mMainThread.getApplicationThread(), mBasePackageName,</span><br><span class="line">            rd, filter, broadcastPermission, userId);&#x2F;&#x2F;4</span><br><span class="line">    if (intent !&#x3D; null) &#123;</span><br><span class="line">        intent.setExtrasClassLoader(getClassLoader());</span><br><span class="line">        intent.prepareToEnterProcess();</span><br><span class="line">    &#125;</span><br><span class="line">    return intent;</span><br><span class="line">&#125; catch (RemoteException e) &#123;</span><br><span class="line">    throw e.rethrowFromSystemServer();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上面中有一行关键的代码.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">final Intent intent &#x3D; ActivityManagerNative.getDefault().registerReceiver(</span><br><span class="line">                  mMainThread.getApplicationThread(), mBasePackageName,</span><br><span class="line">                  rd, filter, broadcastPermission, userId);</span><br></pre></td></tr></table></figure>
+<p>在这里都知道是一个AMS，它最终执行的就是AMS中的registerReceiver.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"> public Intent registerReceiver(IApplicationThread caller, String callerPackage,</span><br><span class="line">            IIntentReceiver receiver, IntentFilter filter, String permission, int userId) &#123;</span><br><span class="line">...</span><br><span class="line"> synchronized(this) &#123;</span><br><span class="line">  ...</span><br><span class="line">            Iterator&lt;String&gt; actions &#x3D; filter.actionsIterator();&#x2F;&#x2F;1</span><br><span class="line">  ...</span><br><span class="line">            &#x2F;&#x2F; Collect stickies of users</span><br><span class="line">            int[] userIds &#x3D; &#123; UserHandle.USER_ALL, UserHandle.getUserId(callingUid) &#125;;</span><br><span class="line">            while (actions.hasNext()) &#123;</span><br><span class="line">                String action &#x3D; actions.next();</span><br><span class="line">                for (int id : userIds) &#123;</span><br><span class="line">                    ArrayMap&lt;String, ArrayList&lt;Intent&gt;&gt; stickies &#x3D; mStickyBroadcasts.get(id);</span><br><span class="line">                    if (stickies !&#x3D; null) &#123;</span><br><span class="line">                        ArrayList&lt;Intent&gt; intents &#x3D; stickies.get(action);</span><br><span class="line">                        if (intents !&#x3D; null) &#123;</span><br><span class="line">                            if (stickyIntents &#x3D;&#x3D; null) &#123;</span><br><span class="line">                                stickyIntents &#x3D; new ArrayList&lt;Intent&gt;();</span><br><span class="line">                            &#125;</span><br><span class="line">                            stickyIntents.addAll(intents);&#x2F;&#x2F;2</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">  ArrayList&lt;Intent&gt; allSticky &#x3D; null;	</span><br><span class="line">        if (stickyIntents !&#x3D; null) &#123;</span><br><span class="line">            final ContentResolver resolver &#x3D; mContext.getContentResolver();</span><br><span class="line">            for (int i &#x3D; 0, N &#x3D; stickyIntents.size(); i &lt; N; i++) &#123;</span><br><span class="line">                Intent intent &#x3D; stickyIntents.get(i);</span><br><span class="line">                if (filter.match(resolver, intent, true, TAG) &gt;&#x3D; 0) &#123;</span><br><span class="line">                    if (allSticky &#x3D;&#x3D; null) &#123;</span><br><span class="line">                        allSticky &#x3D; new ArrayList&lt;Intent&gt;();</span><br><span class="line">                    &#125;</span><br><span class="line">                    allSticky.add(intent);&#x2F;&#x2F;3</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"> ...       </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">synchronized (this) &#123;</span><br><span class="line">          ...</span><br><span class="line">            ReceiverList rl &#x3D; mRegisteredReceivers.get(receiver.asBinder());&#x2F;&#x2F;1</span><br><span class="line">            if (rl &#x3D;&#x3D; null) &#123;</span><br><span class="line">                rl &#x3D; new ReceiverList(this, callerApp, callingPid, callingUid,</span><br><span class="line">                        userId, receiver);&#x2F;&#x2F;2</span><br><span class="line">                if (rl.app !&#x3D; null) &#123;</span><br><span class="line">                    rl.app.receivers.add(rl);</span><br><span class="line">                &#125; </span><br><span class="line">                ...</span><br><span class="line">            &#125;</span><br><span class="line">            ...</span><br><span class="line">            BroadcastFilter bf &#x3D; new BroadcastFilter(filter, rl, callerPackage,</span><br><span class="line">                    permission, callingUid, userId);&#x2F;&#x2F;3</span><br><span class="line">            rl.add(bf);&#x2F;&#x2F;4</span><br><span class="line">            if (!bf.debugCheck()) &#123;</span><br><span class="line">                Slog.w(TAG, &quot;&#x3D;&#x3D;&gt; For Dynamic broadcast&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">            mReceiverResolver.addFilter(bf);&#x2F;&#x2F;5</span><br><span class="line">            ...</span><br><span class="line">            return sticky;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>第一步通过filter得到action的列表.第二步根据actions列表和useId得到所有粘性广播的intent，并传入stickyIntents，第三过将所有的粘性广播传入所有的allSticky。<br>同时将BroadcastFilter添加到mReceiverResolver.这样当AMS接收到广播时就可以从mReceiverResolver中找到对应的广播接收者了。</p>
+<h2 id="广播的发送和接收过程"><a href="#广播的发送和接收过程" class="headerlink" title="广播的发送和接收过程"></a>广播的发送和接收过程</h2><p>发送无序广播需要发送sendBroadcast方法.这个方法的实现就是在ContenxtWrapper中.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">  public void sendBroadcast(Intent intent) &#123;</span><br><span class="line">      mBase.sendBroadcast(intent);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>接着又执行到了ContextImpl中.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">  public void sendBroadcast(Intent intent) &#123;</span><br><span class="line">      warnIfCallingFromSystemProcess();</span><br><span class="line">      String resolvedType &#x3D; intent.resolveTypeIfNeeded(getContentResolver());</span><br><span class="line">      try &#123;</span><br><span class="line">          intent.prepareToLeaveProcess(this);</span><br><span class="line">          ActivityManagerNative.getDefault().broadcastIntent(</span><br><span class="line">                  mMainThread.getApplicationThread(), intent, resolvedType, null,</span><br><span class="line">                  Activity.RESULT_OK, null, null, null, AppOpsManager.OP_NONE, null, false, false,</span><br><span class="line">                  getUserId());&#x2F;&#x2F;1</span><br><span class="line">      &#125; catch (RemoteException e) &#123;</span><br><span class="line">          throw e.rethrowFromSystemServer();</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>最终又会调用AMS中的broadcastIntent。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public final int broadcastIntent(IApplicationThread caller,</span><br><span class="line">          Intent intent, String resolvedType, IIntentReceiver resultTo,</span><br><span class="line">          int resultCode, String resultData, Bundle resultExtras,</span><br><span class="line">          String[] requiredPermissions, int appOp, Bundle bOptions,</span><br><span class="line">          boolean serialized, boolean sticky, int userId) &#123;</span><br><span class="line">      enforceNotIsolatedCaller(&quot;broadcastIntent&quot;);</span><br><span class="line">      synchronized(this) &#123;</span><br><span class="line">          intent &#x3D; verifyBroadcastLocked(intent);&#x2F;&#x2F;1</span><br><span class="line">        ...</span><br><span class="line">          &#x2F;**</span><br><span class="line">          * 2</span><br><span class="line">          *&#x2F;</span><br><span class="line">          int res &#x3D; broadcastIntentLocked(callerApp,</span><br><span class="line">                  callerApp !&#x3D; null ? callerApp.info.packageName : null,</span><br><span class="line">                  intent, resolvedType, resultTo, resultCode, resultData, resultExtras,</span><br><span class="line">                  requiredPermissions, appOp, bOptions, serialized, sticky,</span><br><span class="line">                  callingPid, callingUid, userId);</span><br><span class="line">          Binder.restoreCallingIdentity(origId);</span><br><span class="line">          return res;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>在这段代码中首先执行verifyBroadcastLocked。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">final Intent verifyBroadcastLocked(Intent intent) &#123;</span><br><span class="line">       &#x2F;&#x2F; Refuse possible leaked file descriptors</span><br><span class="line">       if (intent !&#x3D; null &amp;&amp; intent.hasFileDescriptors() &#x3D;&#x3D; true) &#123;&#x2F;&#x2F;1</span><br><span class="line">           throw new IllegalArgumentException(&quot;File descriptors passed in Intent&quot;);</span><br><span class="line">       &#125;</span><br><span class="line">       int flags &#x3D; intent.getFlags();&#x2F;&#x2F;2</span><br><span class="line">       if (!mProcessesReady) &#123;</span><br><span class="line">           if ((flags&amp;Intent.FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT) !&#x3D; 0) &#123;&#x2F;&#x2F;3</span><br><span class="line">           &#125; else if ((flags&amp;Intent.FLAG_RECEIVER_REGISTERED_ONLY) &#x3D;&#x3D; 0) &#123;&#x2F;&#x2F;4</span><br><span class="line">               Slog.e(TAG, &quot;Attempt to launch receivers of broadcast intent &quot; + intent</span><br><span class="line">                       + &quot; before boot completion&quot;);</span><br><span class="line">               throw new IllegalStateException(&quot;Cannot broadcast before boot completed&quot;);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       if ((flags&amp;Intent.FLAG_RECEIVER_BOOT_UPGRADE) !&#x3D; 0) &#123;</span><br><span class="line">           throw new IllegalArgumentException(</span><br><span class="line">                   &quot;Can&#39;t use FLAG_RECEIVER_BOOT_UPGRADE here&quot;);</span><br><span class="line">       &#125;</span><br><span class="line">       return intent;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>这个主要是验证广播是否合法,然后调用AMS中的broadcastIntentLocked。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">final int broadcastIntentLocked(ProcessRecord callerApp,</span><br><span class="line">            String callerPackage, Intent intent, String resolvedType,</span><br><span class="line">            IIntentReceiver resultTo, int resultCode, String resultData,</span><br><span class="line">            Bundle resultExtras, String[] requiredPermissions, int appOp, Bundle bOptions,</span><br><span class="line">            boolean ordered, boolean sticky, int callingPid, int callingUid, int userId) &#123;</span><br><span class="line">  ...</span><br><span class="line">       if ((receivers !&#x3D; null &amp;&amp; receivers.size() &gt; 0)</span><br><span class="line">                || resultTo !&#x3D; null) &#123;</span><br><span class="line">            BroadcastQueue queue &#x3D; broadcastQueueForIntent(intent);</span><br><span class="line">            &#x2F;**</span><br><span class="line">            * 1</span><br><span class="line">            *&#x2F;</span><br><span class="line">            BroadcastRecord r &#x3D; new BroadcastRecord(queue, intent, callerApp,</span><br><span class="line">                    callerPackage, callingPid, callingUid, resolvedType,</span><br><span class="line">                    requiredPermissions, appOp, brOptions, receivers, resultTo, resultCode,</span><br><span class="line">                    resultData, resultExtras, ordered, sticky, false, userId);</span><br><span class="line">     ...               </span><br><span class="line"></span><br><span class="line">            boolean replaced &#x3D; replacePending &amp;&amp; queue.replaceOrderedBroadcastLocked(r);</span><br><span class="line">            if (!replaced) &#123;</span><br><span class="line">                queue.enqueueOrderedBroadcastLocked(r);</span><br><span class="line">                queue.scheduleBroadcastsLocked();&#x2F;&#x2F;2</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; </span><br><span class="line">        ...</span><br><span class="line">        &#125;</span><br><span class="line">        return ActivityManager.BROADCAST_SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后调用scheduleBroadcastsLocked.</p>
+<h2 id="AMS到BroadcastReceiver的调用过程"><a href="#AMS到BroadcastReceiver的调用过程" class="headerlink" title="AMS到BroadcastReceiver的调用过程."></a>AMS到BroadcastReceiver的调用过程.</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public void scheduleBroadcastsLocked() &#123;</span><br><span class="line">...</span><br><span class="line">    mHandler.sendMessage(mHandler.obtainMessage(BROADCAST_INTENT_MSG, this));&#x2F;&#x2F;1</span><br><span class="line">    mBroadcastsScheduled &#x3D; true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个mHandler就是BroadcastHandler。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">private final class BroadcastHandler extends Handler &#123;</span><br><span class="line">    public BroadcastHandler(Looper looper) &#123;</span><br><span class="line">        super(looper, null, true);</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public void handleMessage(Message msg) &#123;</span><br><span class="line">        switch (msg.what) &#123;</span><br><span class="line">            case BROADCAST_INTENT_MSG: &#123;</span><br><span class="line">                if (DEBUG_BROADCAST) Slog.v(</span><br><span class="line">                        TAG_BROADCAST, &quot;Received BROADCAST_INTENT_MSG&quot;);</span><br><span class="line">                processNextBroadcast(true);</span><br><span class="line">            &#125; break;</span><br><span class="line">       ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在BROADCAST_INTENT_MSG中又调用了processNextBroadcast方法.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">final void processNextBroadcast(boolean fromMsg) &#123;</span><br><span class="line">...</span><br><span class="line">          if (fromMsg) &#123;</span><br><span class="line">              mBroadcastsScheduled &#x3D; false;&#x2F;&#x2F;1</span><br><span class="line">          &#125;</span><br><span class="line">          &#x2F;&#x2F; First, deliver any non-serialized broadcasts right away.</span><br><span class="line">          while (mParallelBroadcasts.size() &gt; 0) &#123;&#x2F;&#x2F;2</span><br><span class="line">              r &#x3D; mParallelBroadcasts.remove(0);&#x2F;&#x2F;3</span><br><span class="line">             ...</span><br><span class="line">              for (int i&#x3D;0; i&lt;N; i++) &#123;</span><br><span class="line">                Object target &#x3D; r.receivers.get(i);</span><br><span class="line">                if (DEBUG_BROADCAST)  Slog.v(TAG_BROADCAST,</span><br><span class="line">                          &quot;Delivering non-ordered on [&quot; + mQueueName + &quot;] to registered &quot;</span><br><span class="line">                          + target + &quot;: &quot; + r);</span><br><span class="line">                deliverToRegisteredReceiverLocked(r, (BroadcastFilter)target, false, i);&#x2F;&#x2F;4</span><br><span class="line">              &#125;</span><br><span class="line">         ...</span><br><span class="line">          &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将广播发送给对应的广播接收者deliverToRegisteredReceiverLocked.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">private void deliverToRegisteredReceiverLocked(BroadcastRecord r,</span><br><span class="line">        BroadcastFilter filter, boolean ordered, int index) &#123;</span><br><span class="line">...</span><br><span class="line">   try &#123;</span><br><span class="line">            if (DEBUG_BROADCAST_LIGHT) Slog.i(TAG_BROADCAST,</span><br><span class="line">                    &quot;Delivering to &quot; + filter + &quot; : &quot; + r);</span><br><span class="line">            if (filter.receiverList.app !&#x3D; null &amp;&amp; filter.receiverList.app.inFullBackup) &#123;</span><br><span class="line">             ...   </span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                performReceiveLocked(filter.receiverList.app, filter.receiverList.receiver,</span><br><span class="line">                        new Intent(r.intent), r.resultCode, r.resultData,</span><br><span class="line">                        r.resultExtras, r.ordered, r.initialSticky, r.userId);&#x2F;&#x2F;1</span><br><span class="line">            &#125;</span><br><span class="line">            if (ordered) &#123;</span><br><span class="line">                r.state &#x3D; BroadcastRecord.CALL_DONE_RECEIVE;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (RemoteException e) &#123;</span><br><span class="line"> ...</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这些代码主要是检查权限.如果通过了权限的检查就会执行performReceiveLocked方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">void performReceiveLocked(ProcessRecord app, IIntentReceiver receiver,</span><br><span class="line">          Intent intent, int resultCode, String data, Bundle extras,</span><br><span class="line">          boolean ordered, boolean sticky, int sendingUser) throws RemoteException &#123;</span><br><span class="line">      &#x2F;&#x2F; Send the intent to the receiver asynchronously using one-way binder calls.</span><br><span class="line">      if (app !&#x3D; null) &#123;&#x2F;&#x2F;1</span><br><span class="line">          if (app.thread !&#x3D; null) &#123;&#x2F;&#x2F;2</span><br><span class="line">              &#x2F;&#x2F; If we have an app thread, do the call through that so it is</span><br><span class="line">              &#x2F;&#x2F; correctly ordered with other one-way calls.</span><br><span class="line">              try &#123;</span><br><span class="line">                  app.thread.scheduleRegisteredReceiver(receiver, intent, resultCode,</span><br><span class="line">                          data, extras, ordered, sticky, sendingUser, app.repProcState);&#x2F;&#x2F;3          </span><br><span class="line">              &#125; </span><br><span class="line">          &#125; </span><br><span class="line">          ...</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">          receiver.performReceive(intent, resultCode, data, extras, ordered,</span><br><span class="line">                  sticky, sendingUser);&#x2F;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>这里先检查当前进程是否存在并运行，这里的app.thread表示ApplicationThread.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">public void scheduleRegisteredReceiver(IIntentReceiver receiver, Intent intent,</span><br><span class="line">         int resultCode, String dataStr, Bundle extras, boolean ordered,</span><br><span class="line">         boolean sticky, int sendingUser, int processState) throws RemoteException &#123;</span><br><span class="line">     updateProcessState(processState, false);</span><br><span class="line">     receiver.performReceive(intent, resultCode, dataStr, extras, ordered,</span><br><span class="line">             sticky, sendingUser);&#x2F;&#x2F;1</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> static final class ReceiverDispatcher &#123;</span><br><span class="line">        final static class InnerReceiver extends IIntentReceiver.Stub &#123;</span><br><span class="line">        ...</span><br><span class="line">            InnerReceiver(LoadedApk.ReceiverDispatcher rd, boolean strong) &#123;</span><br><span class="line">                mDispatcher &#x3D; new WeakReference&lt;LoadedApk.ReceiverDispatcher&gt;(rd);</span><br><span class="line">                mStrongRef &#x3D; strong ? rd : null;</span><br><span class="line">            &#125;</span><br><span class="line">            @Override</span><br><span class="line">            public void performReceive(Intent intent, int resultCode, String data,</span><br><span class="line">                    Bundle extras, boolean ordered, boolean sticky, int sendingUser) &#123;</span><br><span class="line">                final LoadedApk.ReceiverDispatcher rd;</span><br><span class="line">                ...</span><br><span class="line">                if (rd !&#x3D; null) &#123;</span><br><span class="line">                    rd.performReceive(intent, resultCode, data, extras,</span><br><span class="line">                            ordered, sticky, sendingUser);&#x2F;&#x2F;1</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">             ...</span><br><span class="line">            &#125;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后又继续调用了performReceive方法.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public void performReceive(Intent intent, int resultCode, String data,</span><br><span class="line">              Bundle extras, boolean ordered, boolean sticky, int sendingUser) &#123;</span><br><span class="line">          final Args args &#x3D; new Args(intent, resultCode, data, extras, ordered,</span><br><span class="line">                  sticky, sendingUser);&#x2F;&#x2F;1</span><br><span class="line">          ...</span><br><span class="line">          if (intent &#x3D;&#x3D; null || !mActivityThread.post(args)) &#123;&#x2F;&#x2F;2</span><br><span class="line">              if (mRegistered &amp;&amp; ordered) &#123;</span><br><span class="line">                  IActivityManager mgr &#x3D; ActivityManagerNative.getDefault();</span><br><span class="line">                  if (ActivityThread.DEBUG_BROADCAST) Slog.i(ActivityThread.TAG,</span><br><span class="line">                          &quot;Finishing sync broadcast to &quot; + mReceiver);</span><br><span class="line">                  args.sendFinished(mgr);</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+<p>在这里首先将广播的intent对象封装成Args对象,同时在mActivityThread.post(args)中将args的运行执行在主进程中。<br>又因为args继承了Runnable方法,所有最终消息就在run方法中被执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public void run() &#123;</span><br><span class="line">  ...</span><br><span class="line">     try &#123;</span><br><span class="line">         ClassLoader cl &#x3D;  mReceiver.getClass().getClassLoader();</span><br><span class="line">         intent.setExtrasClassLoader(cl);</span><br><span class="line">         intent.prepareToEnterProcess();</span><br><span class="line">         setExtrasClassLoader(cl);</span><br><span class="line">         receiver.setPendingResult(this);</span><br><span class="line">         receiver.onReceive(mContext, intent);&#x2F;&#x2F;1</span><br><span class="line">     &#125; catch (Exception e) &#123;</span><br><span class="line">        ...</span><br><span class="line">     &#125;</span><br><span class="line">    ...</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>最终广播的onReceive就被执行了,这样就接收到了intent发送的消息。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/29/2018-12-29-Service%E7%9A%84%E7%BB%91%E5%AE%9A%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90/" rel="next" title="Service的绑定过程分析">
+                <i class="fa fa-chevron-left"></i> Service的绑定过程分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/02/2019-01-02-Okhttp%E5%BC%82%E6%AD%A5%E8%AF%B7%E6%B1%82%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" rel="prev" title="Okhttp异步请求源码解析">
+                Okhttp异步请求源码解析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="John Doe" />
+          <p class="site-author-name" itemprop="name">John Doe</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">48</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">tags</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#广播的注册过程"><span class="nav-number">1.</span> <span class="nav-text">广播的注册过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#广播的发送和接收过程"><span class="nav-number">2.</span> <span class="nav-text">广播的发送和接收过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AMS到BroadcastReceiver的调用过程"><span class="nav-number">3.</span> <span class="nav-text">AMS到BroadcastReceiver的调用过程.</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
