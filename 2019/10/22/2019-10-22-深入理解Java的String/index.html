@@ -5,27 +5,27 @@
   
 
   
-  <title>深入理解Java的String | JoshuaYingWhatEgr blogs</title>
+  <title>深入理解Java的String | JoshuaYingWhatEgr Blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="如果要想理解String，那么就需要先理解JVM虚拟机以及String在JVM层的解析. JVM相关 Java栈：这个是用来存放栈帧的,每个方法被执行的时候就会同时创建一个栈帧用于存储局部变量表，操作栈,动态连接等 Java堆：在虚拟机启动创建时，这里的唯一目的就是存放对象的实例,几乎所有的对象实例都在这里创建分配 方法区：存放每个类的结构信息。 常量池：静态常量池存在于Class文件中,运行时常">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入理解Java的String">
-<meta property="og:url" content="http://yoursite.com/2019/10/22/2019-10-22-%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%9A%84String/index.html">
-<meta property="og:site_name" content="JoshuaYingWhatEgr blogs">
+<meta property="og:url" content="https://joshuayingwhategr.github.io/2019/10/22/2019-10-22-%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%9A%84String/index.html">
+<meta property="og:site_name" content="JoshuaYingWhatEgr Blogs">
 <meta property="og:description" content="如果要想理解String，那么就需要先理解JVM虚拟机以及String在JVM层的解析. JVM相关 Java栈：这个是用来存放栈帧的,每个方法被执行的时候就会同时创建一个栈帧用于存储局部变量表，操作栈,动态连接等 Java堆：在虚拟机启动创建时，这里的唯一目的就是存放对象的实例,几乎所有的对象实例都在这里创建分配 方法区：存放每个类的结构信息。 常量池：静态常量池存在于Class文件中,运行时常">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://yoursite.com/img/in-post/20180827123540873.png">
-<meta property="og:image" content="http://yoursite.com/img/in-post/20180827123632152.png">
-<meta property="og:image" content="http://yoursite.com/img/in-post/20180827123647339.png">
-<meta property="og:image" content="http://yoursite.com/img/in-post/20180827123737708.png">
+<meta property="og:image" content="https://joshuayingwhategr.github.io/img/in-post/20180827123540873.png">
+<meta property="og:image" content="https://joshuayingwhategr.github.io/img/in-post/20180827123632152.png">
+<meta property="og:image" content="https://joshuayingwhategr.github.io/img/in-post/20180827123647339.png">
+<meta property="og:image" content="https://joshuayingwhategr.github.io/img/in-post/20180827123737708.png">
 <meta property="article:published_time" content="2019-10-21T16:00:00.000Z">
 <meta property="article:modified_time" content="2020-03-21T04:19:18.835Z">
 <meta property="article:author" content="JoshuaYingWhatEgr">
 <meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://yoursite.com/img/in-post/20180827123540873.png">
+<meta name="twitter:image" content="https://joshuayingwhategr.github.io/img/in-post/20180827123540873.png">
   
-    <link rel="alternate" href="/atom.xml" title="JoshuaYingWhatEgr blogs" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="JoshuaYingWhatEgr Blogs" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -46,7 +46,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">JoshuaYingWhatEgr blogs</a>
+        <a href="/" id="logo">JoshuaYingWhatEgr Blogs</a>
       </h1>
       
     </div>
@@ -66,7 +66,7 @@
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://joshuayingwhategr.github.io"></form>
       </div>
     </div>
   </div>
@@ -131,7 +131,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/10/22/2019-10-22-%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%9A%84String/" data-id="ck8cw09au001qpx9kcoi69nia" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2019/10/22/2019-10-22-%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%9A%84String/" data-id="ck8cw3z9o001orl9kfyzn38xb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li></ul>
@@ -142,19 +142,19 @@
     
 <nav id="article-nav">
   
-    <a href="/2019/10/22/2019-10-22-%E9%83%AD%E6%95%AC%E6%98%8E%E7%9A%84%E4%B8%8A%E7%BA%B2%E4%B8%8A%E7%BA%BF%E5%92%8C%E6%9D%8E%E8%AF%9A%E5%84%92%E7%9A%84%E5%80%9A%E8%80%81%E5%8D%96%E8%80%81/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/10/25/2019-10-25-%E4%B8%8D%E5%8F%98%E8%A0%A2%E7%9A%84%E4%B8%A4%E4%B8%AA%E6%96%B9%E6%B3%95/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          郭敬明的上纲上线和李诚儒的倚老卖老
+          不变蠢的两个方法
         
       </div>
     </a>
   
   
-    <a href="/2019/10/18/2019-10-18-%E4%BD%A0%E5%AF%B9%E5%91%A8%E6%9D%B0%E4%BC%A6%E4%BB%80%E4%B9%88%E8%AF%84%E4%BB%B7%EF%BC%9F/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/10/22/2019-10-22-%E9%83%AD%E6%95%AC%E6%98%8E%E7%9A%84%E4%B8%8A%E7%BA%B2%E4%B8%8A%E7%BA%BF%E5%92%8C%E6%9D%8E%E8%AF%9A%E5%84%92%E7%9A%84%E5%80%9A%E8%80%81%E5%8D%96%E8%80%81/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">你对周杰伦什么评价？</div>
+      <div class="article-nav-title">郭敬明的上纲上线和李诚儒的倚老卖老</div>
     </a>
   
 </nav>
