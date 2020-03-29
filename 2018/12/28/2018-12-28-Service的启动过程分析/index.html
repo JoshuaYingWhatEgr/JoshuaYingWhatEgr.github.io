@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Android开发中我们通常要启动一个Service一般都会执行: 1startService(new Intent()); 这段代码的逻辑在Contextwrapper中. 123456789public class ContextWrapper extends Context &amp;#123;    Context mBase;...  @Override    public ComponentN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Service的启动过程分析">
+<meta property="og:url" content="http://yoursite.com/2018/12/28/2018-12-28-Service%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Android开发中我们通常要启动一个Service一般都会执行: 1startService(new Intent()); 这段代码的逻辑在Contextwrapper中. 123456789public class ContextWrapper extends Context &amp;#123;    Context mBase;...  @Override    public ComponentN">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2018-12-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-21T04:19:18.831Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/12/28/2018-12-28-Service的启动过程分析/"/>
+
+
+
+
+
+  <title>Service的启动过程分析 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/28/2018-12-28-Service%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Service的启动过程分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-28T00:00:00+08:00">
+                2018-12-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Android开发中我们通常要启动一个Service一般都会执行:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">startService(new Intent());</span><br></pre></td></tr></table></figure>
+<p>这段代码的逻辑在Contextwrapper中.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public class ContextWrapper extends Context &#123;</span><br><span class="line">    Context mBase;</span><br><span class="line">...</span><br><span class="line">  @Override</span><br><span class="line">    public ComponentName startService(Intent service) &#123;</span><br><span class="line">        return mBase.startService(service);</span><br><span class="line">    &#125;</span><br><span class="line">...    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在startService中程序返回执行了mBase.startService.而mBase是一个Context上下文对象，在ActivityThread中启动Activity会调用performLaunchActivity和创建上下文对象.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"> private Activity performLaunchActivity(ActivityClientRecord r, Intent customIntent) &#123;</span><br><span class="line">  ...</span><br><span class="line">            if (activity !&#x3D; null) &#123;</span><br><span class="line">                Context appContext &#x3D; createBaseContextForActivity(r, activity);&#x2F;&#x2F;1</span><br><span class="line">         ...</span><br><span class="line">                &#125;</span><br><span class="line">                activity.attach(appContext, this, getInstrumentation(), r.token,</span><br><span class="line">                        r.ident, app, r.intent, r.activityInfo, title, r.parent,</span><br><span class="line">                        r.embeddedID, r.lastNonConfigurationInstances, config,</span><br><span class="line">                        r.referrer, r.voiceInteractor, window);</span><br><span class="line">                ...</span><br><span class="line">        &#125;</span><br><span class="line">        return activity;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在performLaunchActivity中会执行createBaseContextForActivity。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">private Context createBaseContextForActivity(ActivityClientRecord r, final Activity activity) &#123;</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">    ContextImpl appContext &#x3D; ContextImpl.createActivityContext(</span><br><span class="line">            this, r.packageInfo, r.token, displayId, r.overrideConfig);</span><br><span class="line">    appContext.setOuterContext(activity);</span><br><span class="line">    Context baseContext &#x3D; appContext;</span><br><span class="line">    ...</span><br><span class="line">    return baseContext;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这里创建ContextImpl对象并返回。然后调用Activity#attach方法将上下文对象和appContext关联起来。那么最终启动Service就进入了ContextImpl中.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Override</span><br><span class="line">public ComponentName startService(Intent service) &#123;</span><br><span class="line">    warnIfCallingFromSystemProcess();</span><br><span class="line">    return startServiceCommon(service, mUser);</span><br><span class="line">&#125;</span><br><span class="line"> private ComponentName startServiceCommon(Intent service, UserHandle user) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            validateServiceIntent(service);</span><br><span class="line">            service.prepareToLeaveProcess(this);</span><br><span class="line">            &#x2F;**</span><br><span class="line">            * 1</span><br><span class="line">            *&#x2F;</span><br><span class="line">            ComponentName cn &#x3D; ActivityManagerNative.getDefault().startService(</span><br><span class="line">                mMainThread.getApplicationThread(), service, service.resolveTypeIfNeeded(</span><br><span class="line">                            getContentResolver()), getOpPackageName(), user.getIdentifier());</span><br><span class="line">      ...</span><br><span class="line">            return cn;</span><br><span class="line">        &#125; catch (RemoteException e) &#123;</span><br><span class="line">            throw e.rethrowFromSystemServer();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>startService最终返回了startServiceCommon。<br>在startServiceCommon中有一个重要的代码ActivityManagerNative.getDefault()这个是一个AMS最终Service的启动又交给了AMS来处理</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Override</span><br><span class="line">public ComponentName startService(IApplicationThread caller, Intent service,</span><br><span class="line">        String resolvedType, String callingPackage, int userId)</span><br><span class="line">        throws TransactionTooLargeException &#123;</span><br><span class="line"> ...</span><br><span class="line">    synchronized(this) &#123;</span><br><span class="line"> ...</span><br><span class="line">        ComponentName res &#x3D; mServices.startServiceLocked(caller, service,</span><br><span class="line">                resolvedType, callingPid, callingUid, callingPackage, userId);&#x2F;&#x2F;1</span><br><span class="line">        Binder.restoreCallingIdentity(origId);</span><br><span class="line">        return res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在里继续调用mServices.startServiceLocked，mServices的类型是ActiveServices。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">ComponentName startServiceLocked(IApplicationThread caller, Intent service, String resolvedType,</span><br><span class="line">            int callingPid, int callingUid, String callingPackage, final int userId)</span><br><span class="line">            throws TransactionTooLargeException &#123;</span><br><span class="line">      ...</span><br><span class="line">        return startServiceInnerLocked(smap, service, r, callerFg, addToStarting);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">   ComponentName startServiceInnerLocked(ServiceMap smap, Intent service, ServiceRecord r,</span><br><span class="line">            boolean callerFg, boolean addToStarting) throws TransactionTooLargeException &#123;</span><br><span class="line"></span><br><span class="line">     ...</span><br><span class="line">        String error &#x3D; bringUpServiceLocked(r, service.getFlags(), callerFg, false, false);</span><br><span class="line">     ...</span><br><span class="line">        return r.name;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>在startServiceInnerLocked中又调用了bringUpServiceLocked</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"> private String bringUpServiceLocked(ServiceRecord r, int intentFlags, boolean execInFg,</span><br><span class="line">            boolean whileRestarting, boolean permissionsReviewRequired)</span><br><span class="line">            throws TransactionTooLargeException &#123;</span><br><span class="line">...</span><br><span class="line">  final String procName &#x3D; r.processName;&#x2F;&#x2F;1</span><br><span class="line">  ProcessRecord app;</span><br><span class="line">  if (!isolated) &#123;</span><br><span class="line">            app &#x3D; mAm.getProcessRecordLocked(procName, r.appInfo.uid, false);&#x2F;&#x2F;2</span><br><span class="line">            if (DEBUG_MU) Slog.v(TAG_MU, &quot;bringUpServiceLocked: appInfo.uid&#x3D;&quot; + r.appInfo.uid</span><br><span class="line">                        + &quot; app&#x3D;&quot; + app);</span><br><span class="line">            if (app !&#x3D; null &amp;&amp; app.thread !&#x3D; null) &#123;&#x2F;&#x2F;3</span><br><span class="line">                try &#123;</span><br><span class="line">                    app.addPackage(r.appInfo.packageName, r.appInfo.versionCode, mAm.mProcessStats);</span><br><span class="line">                    realStartServiceLocked(r, app, execInFg);&#x2F;&#x2F;4</span><br><span class="line">                    return null;</span><br><span class="line">                &#125; catch (TransactionTooLargeException e) &#123;</span><br><span class="line">                    throw e;</span><br><span class="line">                &#125; catch (RemoteException e) &#123;</span><br><span class="line">                    Slog.w(TAG, &quot;Exception when starting service &quot; + r.shortName, e);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            app &#x3D; r.isolatedProc;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"> if (app &#x3D;&#x3D; null &amp;&amp; !permissionsReviewRequired) &#123;&#x2F;&#x2F;5</span><br><span class="line">            if ((app&#x3D;mAm.startProcessLocked(procName, r.appInfo, true, intentFlags,</span><br><span class="line">                    &quot;service&quot;, r.name, false, isolated, false)) &#x3D;&#x3D; null) &#123;&#x2F;&#x2F;6</span><br><span class="line">              ...</span><br><span class="line">            &#125;</span><br><span class="line">            if (isolated) &#123;</span><br><span class="line">                r.isolatedProc &#x3D; app;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"> ...     </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里主要是判断当前运行的Service进程是否存在如果不存在就执行mAm.startProcessLocked，如果存在就执行realStartServiceLocked.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">private final void realStartServiceLocked(ServiceRecord r,</span><br><span class="line">        ProcessRecord app, boolean execInFg) throws RemoteException &#123;</span><br><span class="line">   ...</span><br><span class="line">    try &#123;</span><br><span class="line">       ...</span><br><span class="line">        app.thread.scheduleCreateService(r, r.serviceInfo,</span><br><span class="line">                mAm.compatibilityInfoForPackageLocked(r.serviceInfo.applicationInfo),</span><br><span class="line">                app.repProcState);</span><br><span class="line">        r.postNotification();</span><br><span class="line">        created &#x3D; true;</span><br><span class="line">    &#125; catch (DeadObjectException e) &#123;</span><br><span class="line">      ...</span><br><span class="line">    &#125; </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中app.thread是一个IApplicationThread类型，它的实现类是ActivityThread的内部类ApplicationThread。然后ApplicationThread调用scheduleCreateService方法.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public final void scheduleCreateService(IBinder token,</span><br><span class="line">           ServiceInfo info, CompatibilityInfo compatInfo, int processState) &#123;</span><br><span class="line">       updateProcessState(processState, false);</span><br><span class="line">       CreateServiceData s &#x3D; new CreateServiceData();</span><br><span class="line">       s.token &#x3D; token;</span><br><span class="line">       s.info &#x3D; info;</span><br><span class="line">       s.compatInfo &#x3D; compatInfo;</span><br><span class="line">       sendMessage(H.CREATE_SERVICE, s);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>H是ActivityThread的内部类，继承了Handler.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public void handleMessage(Message msg) &#123;</span><br><span class="line">            if (DEBUG_MESSAGES) Slog.v(TAG, &quot;&gt;&gt;&gt; handling: &quot; + codeToString(msg.what));</span><br><span class="line">            switch (msg.what) &#123;</span><br><span class="line">            ...</span><br><span class="line">               case CREATE_SERVICE:</span><br><span class="line">                    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, (&quot;serviceCreate: &quot; + String.valueOf(msg.obj)));</span><br><span class="line">                    handleCreateService((CreateServiceData)msg.obj);</span><br><span class="line">                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</span><br><span class="line">                    break;</span><br><span class="line">            ...</span><br><span class="line">             &#125;</span><br><span class="line">          ...</span><br><span class="line">          &#125;</span><br><span class="line">       ...   </span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>然后又执行了handleCreateService。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">private void handleCreateService(CreateServiceData data) &#123;</span><br><span class="line">       unscheduleGcIdler();</span><br><span class="line">       LoadedApk packageInfo &#x3D; getPackageInfoNoCheck(</span><br><span class="line">               data.info.applicationInfo, data.compatInfo);&#x2F;&#x2F;1</span><br><span class="line">       Service service &#x3D; null;</span><br><span class="line">       try &#123;</span><br><span class="line">           java.lang.ClassLoader cl &#x3D; packageInfo.getClassLoader();&#x2F;&#x2F;2</span><br><span class="line">           service &#x3D; (Service) cl.loadClass(data.info.name).newInstance();&#x2F;&#x2F;3</span><br><span class="line">       &#125; catch (Exception e) &#123;</span><br><span class="line">          ...</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       try &#123;</span><br><span class="line">           if (localLOGV) Slog.v(TAG, &quot;Creating service &quot; + data.info.name);</span><br><span class="line"></span><br><span class="line">           ContextImpl context &#x3D; ContextImpl.createAppContext(this, packageInfo);&#x2F;&#x2F;4</span><br><span class="line">           context.setOuterContext(service);</span><br><span class="line"></span><br><span class="line">           Application app &#x3D; packageInfo.makeApplication(false, mInstrumentation);</span><br><span class="line">           service.attach(context, this, data.info.name, data.token, app,</span><br><span class="line">                   ActivityManagerNative.getDefault());&#x2F;&#x2F;5</span><br><span class="line">           service.onCreate();&#x2F;&#x2F;6</span><br><span class="line">           mServices.put(data.token, service);&#x2F;&#x2F;7</span><br><span class="line">        ...</span><br><span class="line">       &#125; catch (Exception e) &#123;</span><br><span class="line">           ...</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>在这里首先通过类加载器创建了一个Service对象,然后调用attach来初始化Service.<br>接下来继续执行service.onCreate()执行启动这个Service.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/27/2018-12-27-Activity%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/" rel="next" title="Activity的工作过程">
+                <i class="fa fa-chevron-left"></i> Activity的工作过程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/29/2018-12-29-Service%E7%9A%84%E7%BB%91%E5%AE%9A%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90/" rel="prev" title="Service的绑定过程分析">
+                Service的绑定过程分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="John Doe" />
+          <p class="site-author-name" itemprop="name">John Doe</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">48</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">tags</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

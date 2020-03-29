@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="有些时候我们可以通过代码来添加一个布局到我们的应用中,这个时候就需要用到LayoutInflate.inflate了. 1inflate(@LayoutRes int resource, @Nullable ViewGroup root, boolean attachToRoot)  resource:这个参数表示要添加的布局结构； root:表示要添加的布局结构需要依赖的根布局; attachT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="理解LayoutInflate.inflater的三个参数含义">
+<meta property="og:url" content="http://yoursite.com/2019/07/17/2019-7-17-%E7%90%86%E8%A7%A3LayoutInflate.inflater%E7%9A%84%E4%B8%89%E4%B8%AA%E5%8F%82%E6%95%B0%E5%90%AB%E4%B9%89/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="有些时候我们可以通过代码来添加一个布局到我们的应用中,这个时候就需要用到LayoutInflate.inflate了. 1inflate(@LayoutRes int resource, @Nullable ViewGroup root, boolean attachToRoot)  resource:这个参数表示要添加的布局结构； root:表示要添加的布局结构需要依赖的根布局; attachT">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-07-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-21T04:19:18.837Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/07/17/2019-7-17-理解LayoutInflate.inflater的三个参数含义/"/>
+
+
+
+
+
+  <title>理解LayoutInflate.inflater的三个参数含义 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/17/2019-7-17-%E7%90%86%E8%A7%A3LayoutInflate.inflater%E7%9A%84%E4%B8%89%E4%B8%AA%E5%8F%82%E6%95%B0%E5%90%AB%E4%B9%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">理解LayoutInflate.inflater的三个参数含义</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-07-17T00:00:00+08:00">
+                2019-07-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>有些时候我们可以通过代码来添加一个布局到我们的应用中,这个时候就需要用到LayoutInflate.inflate了.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">inflate(@LayoutRes int resource, @Nullable ViewGroup root, boolean attachToRoot)</span><br></pre></td></tr></table></figure>
+<ol>
+<li>resource:这个参数表示要添加的布局结构；</li>
+<li>root:表示要添加的布局结构需要依赖的根布局;</li>
+<li>attachToRoot:表示布局是否要添加到根布局。</li>
+</ol>
+<h2 id="root-null-attachToRoot-true"><a href="#root-null-attachToRoot-true" class="headerlink" title="root != null,attachToRoot = true"></a>root != null,attachToRoot = true</h2><p>当root不为空,attachToRoot为true时表示将resource布局添加到root中,resource的各个节点都是有效的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">LinearLayout ll &#x3D; (LinearLayout) findViewById(R.id.ll);</span><br><span class="line">LayoutInflater inflater &#x3D; LayoutInflater.from(this);</span><br><span class="line">View view &#x3D; inflater.inflate(R.layout.linearlayout, ll, true);</span><br></pre></td></tr></table></figure>
+<p>如果这个时候我们添加一行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ll.addView(view);</span><br></pre></td></tr></table></figure>
+<p>那么这个时候就会报重复添加的错误.</p>
+<h2 id="root-null-attachToRoot-false"><a href="#root-null-attachToRoot-false" class="headerlink" title="root != null,attachToRoot = false"></a>root != null,attachToRoot = false</h2><p>当root不为空,attachToRoot为false时表示将resource布局不添加到root中。这种情况表示我们想要resource的各个节点有效但是又不想将这个resource和root关联，这个时候如果需要添加到root中需要手动调用addview。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">LinearLayout ll &#x3D; (LinearLayout) findViewById(R.id.ll);</span><br><span class="line">LayoutInflater inflater &#x3D; LayoutInflater.from(this);</span><br><span class="line">View view &#x3D; inflater.inflate(R.layout.linearlayout, ll, true);</span><br><span class="line">ll.addView(view);&#x2F;&#x2F;在这里需要手动添加</span><br></pre></td></tr></table></figure>
+<h2 id="root-null-attachToRoot-true-false"><a href="#root-null-attachToRoot-true-false" class="headerlink" title="root = null,attachToRoot = true | false"></a>root = null,attachToRoot = true | false</h2><p>这个时候由于我们的root为空所以我们的resource布局的根节点的宽高就会失效布局样式就不会是我们编写的效果,无论attachToRoot为true还是false.</p>
+<h2 id="源码解读"><a href="#源码解读" class="headerlink" title="源码解读"></a>源码解读</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">inflate(@LayoutRes int resource, @Nullable ViewGroup root, boolean attachToRoot)</span><br></pre></td></tr></table></figure>
+<p>这个代码最终都会执行到：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line">public View inflate(XmlPullParser parser, @Nullable ViewGroup root, boolean attachToRoot) &#123;</span><br><span class="line">        synchronized (mConstructorArgs) &#123;</span><br><span class="line">            Trace.traceBegin(Trace.TRACE_TAG_VIEW, &quot;inflate&quot;);</span><br><span class="line"></span><br><span class="line">            final Context inflaterContext &#x3D; mContext;</span><br><span class="line">            final AttributeSet attrs &#x3D; Xml.asAttributeSet(parser);</span><br><span class="line">            Context lastContext &#x3D; (Context) mConstructorArgs[0];</span><br><span class="line">            mConstructorArgs[0] &#x3D; inflaterContext;</span><br><span class="line">            View result &#x3D; root;</span><br><span class="line"></span><br><span class="line">            try &#123;</span><br><span class="line">                &#x2F;&#x2F; Look for the root node.</span><br><span class="line">                int type;</span><br><span class="line">                while ((type &#x3D; parser.next()) !&#x3D; XmlPullParser.START_TAG &amp;&amp;</span><br><span class="line">                        type !&#x3D; XmlPullParser.END_DOCUMENT) &#123;</span><br><span class="line">                    &#x2F;&#x2F; Empty</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                if (type !&#x3D; XmlPullParser.START_TAG) &#123;</span><br><span class="line">                    throw new InflateException(parser.getPositionDescription()</span><br><span class="line">                            + &quot;: No start tag found!&quot;);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                final String name &#x3D; parser.getName();</span><br><span class="line"></span><br><span class="line">                if (DEBUG) &#123;</span><br><span class="line">                    System.out.println(&quot;**************************&quot;);</span><br><span class="line">                    System.out.println(&quot;Creating root view: &quot;</span><br><span class="line">                            + name);</span><br><span class="line">                    System.out.println(&quot;**************************&quot;);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                if (TAG_MERGE.equals(name)) &#123;</span><br><span class="line">                    if (root &#x3D;&#x3D; null || !attachToRoot) &#123;</span><br><span class="line">                        throw new InflateException(&quot;&lt;merge &#x2F;&gt; can be used only with a valid &quot;</span><br><span class="line">                                + &quot;ViewGroup root and attachToRoot&#x3D;true&quot;);</span><br><span class="line">                    &#125;</span><br><span class="line">                    &#x2F;&#x2F;初始化所有的子控件，加载xml内view,并添加到temp中</span><br><span class="line">                    rInflate(parser, root, inflaterContext, attrs, false);</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    &#x2F;&#x2F; Temp is the root view that was found in the xml</span><br><span class="line">                    final View temp &#x3D; createViewFromTag(root, name, inflaterContext, attrs);</span><br><span class="line"></span><br><span class="line">                    ViewGroup.LayoutParams params &#x3D; null;</span><br><span class="line"></span><br><span class="line">                    if (root !&#x3D; null) &#123;</span><br><span class="line">                        if (DEBUG) &#123;</span><br><span class="line">                            System.out.println(&quot;Creating params from root: &quot; +</span><br><span class="line">                                    root);</span><br><span class="line">                        &#125;</span><br><span class="line">                        &#x2F;&#x2F; Create layout params that match root, if supplied</span><br><span class="line">                        params &#x3D; root.generateLayoutParams(attrs);&#x2F;&#x2F;1</span><br><span class="line">                        if (!attachToRoot) &#123;&#x2F;&#x2F;3</span><br><span class="line">                            &#x2F;&#x2F; Set the layout params for temp if we are not</span><br><span class="line">                            &#x2F;&#x2F; attaching. (If we are, we use addView, below)</span><br><span class="line">                            temp.setLayoutParams(params);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    if (DEBUG) &#123;</span><br><span class="line">                        System.out.println(&quot;-----&gt; start inflating children&quot;);</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; Inflate all children under temp against its context.</span><br><span class="line">                    rInflateChildren(parser, temp, attrs, true);</span><br><span class="line"></span><br><span class="line">                    if (DEBUG) &#123;</span><br><span class="line">                        System.out.println(&quot;-----&gt; done inflating children&quot;);</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; We are supposed to attach all the views we found (int temp)</span><br><span class="line">                    &#x2F;&#x2F; to root. Do that now.</span><br><span class="line">                    if (root !&#x3D; null &amp;&amp; attachToRoot) &#123;&#x2F;&#x2F;2</span><br><span class="line">                        root.addView(temp, params);</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; Decide whether to return the root that was passed in or the</span><br><span class="line">                    &#x2F;&#x2F; top view found in xml.</span><br><span class="line">                    if (root &#x3D;&#x3D; null || !attachToRoot) &#123;&#x2F;&#x2F;4</span><br><span class="line">                        result &#x3D; temp;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125; catch (XmlPullParserException e) &#123;</span><br><span class="line">                final InflateException ie &#x3D; new InflateException(e.getMessage(), e);</span><br><span class="line">                ie.setStackTrace(EMPTY_STACK_TRACE);</span><br><span class="line">                throw ie;</span><br><span class="line">            &#125; catch (Exception e) &#123;</span><br><span class="line">                final InflateException ie &#x3D; new InflateException(parser.getPositionDescription()</span><br><span class="line">                        + &quot;: &quot; + e.getMessage(), e);</span><br><span class="line">                ie.setStackTrace(EMPTY_STACK_TRACE);</span><br><span class="line">                throw ie;</span><br><span class="line">            &#125; finally &#123;</span><br><span class="line">                &#x2F;&#x2F; Don&#39;t retain static reference on context.</span><br><span class="line">                mConstructorArgs[0] &#x3D; lastContext;</span><br><span class="line">                mConstructorArgs[1] &#x3D; null;</span><br><span class="line"></span><br><span class="line">                Trace.traceEnd(Trace.TRACE_TAG_VIEW);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            return result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>当root!=null时我们会先找出根节点的布局参数(1):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">params &#x3D; root.generateLayoutParams(attrs);</span><br></pre></td></tr></table></figure>
+<p>然后判断当root!=null,attachToRoot=true就会执行(2):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if (root !&#x3D; null &amp;&amp; attachToRoot) &#123;&#x2F;&#x2F;2</span><br><span class="line">                        root.addView(temp, params);</span><br><span class="line">                    &#125;</span><br></pre></td></tr></table></figure>
+<p>所以如果我们在代码中又重复调用addView的话就会报重复添加view的错误.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if (!attachToRoot) &#123;&#x2F;&#x2F;3</span><br><span class="line">                            &#x2F;&#x2F; Set the layout params for temp if we are not</span><br><span class="line">                            &#x2F;&#x2F; attaching. (If we are, we use addView, below)</span><br><span class="line">                            temp.setLayoutParams(params);</span><br><span class="line">                        &#125;</span><br></pre></td></tr></table></figure>
+<p>如果root!=null同时attachToRoot为false这时候就会将刚刚生成的params设置到temp中.<br>如果指定root=null(4)，那么无论attachToRoot为true或者false都会将temp赋值给result.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/10/2019-7-10-%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D/" rel="next" title="屏幕适配">
+                <i class="fa fa-chevron-left"></i> 屏幕适配
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/28/2019-08-28-Java%E4%B8%AD%E7%9A%84%E8%87%AA%E5%8A%A8%E8%A3%85%E7%AE%B1%E5%92%8C%E6%8B%86%E7%AE%B1/" rel="prev" title="Java中的自动装箱和拆箱">
+                Java中的自动装箱和拆箱 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="John Doe" />
+          <p class="site-author-name" itemprop="name">John Doe</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">48</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">tags</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#root-null-attachToRoot-true"><span class="nav-number">1.</span> <span class="nav-text">root !&#x3D; null,attachToRoot &#x3D; true</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#root-null-attachToRoot-false"><span class="nav-number">2.</span> <span class="nav-text">root !&#x3D; null,attachToRoot &#x3D; false</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#root-null-attachToRoot-true-false"><span class="nav-number">3.</span> <span class="nav-text">root &#x3D; null,attachToRoot &#x3D; true | false</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码解读"><span class="nav-number">4.</span> <span class="nav-text">源码解读</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
