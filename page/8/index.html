@@ -60,6 +60,58 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-2019-7-10-屏幕适配" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/07/10/2019-7-10-%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D/" class="article-date">
+  <time datetime="2019-07-09T16:00:00.000Z" itemprop="datePublished">2019-07-10</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/10/2019-7-10-%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D/">屏幕适配</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="最小宽度适配"><a href="#最小宽度适配" class="headerlink" title="最小宽度适配"></a>最小宽度适配</h1><p>Android中屏幕适配的方式有很多种,其中最小宽度适配是通过获取手机屏幕的最小宽度进行适配。<br>在项目中我们通过获取屏幕的最小宽度dp值给定一个基础数据dp。它的计算是：<br>最小宽度(例如:1080)/(手机的dpi/160) = dp.<br>例如：1080*1920,480dpi.根据上面的公式计算得出的dp=360.所以将屏幕的最小宽度就设置为360dp(一般大部分手机屏幕的最小基本数值为360,这样将宽度就等分成360份).<br>将手机屏幕等分成360份之后,需要在项目中的values文件的dimens.xml文件中设置.</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span>?&gt;</span><br><span class="line">&lt;resources&gt;</span><br><span class="line">	&lt;dimen name="dp_1"&gt;1dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_2"&gt;2dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_3"&gt;3dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_4"&gt;4dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_5"&gt;5dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_6"&gt;6dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_7"&gt;7dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_8"&gt;8dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_9"&gt;9dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_10"&gt;10dp&lt;/dimen&gt;</span><br><span class="line">	...</span><br><span class="line">	&lt;dimen name="dp_356"&gt;356dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_357"&gt;357dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_358"&gt;358dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_359"&gt;359dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_360"&gt;360dp&lt;/dimen&gt;</span><br><span class="line">&lt;/resources&gt;</span><br></pre></td></tr></table></figure>
+<p>这样其他的dp的值就以360作为基础数值计算出适配的大小.<br>360dp是基础数值时，values-sw400dp的计算出来的数值就是:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span>?&gt;</span><br><span class="line">&lt;resources&gt;</span><br><span class="line">	&lt;dimen name="dp_1"&gt;1.1111dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_2"&gt;2.2222dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_3"&gt;3.3333dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_4"&gt;4.4444dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_5"&gt;5.5556dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_6"&gt;6.6667dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_7"&gt;7.7778dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_8"&gt;8.8889dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_9"&gt;10.0000dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_10"&gt;11.1111dp&lt;/dimen&gt;</span><br><span class="line">	...</span><br><span class="line">	&lt;dimen name="dp_355"&gt;394.4444dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_356"&gt;395.5556dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_357"&gt;396.6667dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_358"&gt;397.7778dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_359"&gt;398.8889dp&lt;/dimen&gt;</span><br><span class="line">	&lt;dimen name="dp_360"&gt;400.0000dp&lt;/dimen&gt;</span><br><span class="line">&lt;/resources&gt;</span><br></pre></td></tr></table></figure>
+<p>这样就可以保证不管在任何手机上运行只要找到其对应的values-sw<N>dp就可以适配了。<br>但是如果我们计算每个values中的dp具体数据就太麻烦了,可以<a href="https://www.jianshu.com/p/1302ad5a4b04" target="_blank" rel="noopener">参考</a>插件一键生成.<br>通过按照最小宽度适配方案可以达到在不同手机上一样的显示效果但是有几个缺点:<br>1.我们需要设置不同的values-sw<N>dp,这样values下面的dimens.xml就会增加(相对于屏幕分辨率适配要少很多)。<br>2.我们是引用@dimen/dp_N,如果以后又要更换适配方案的话需要更换布局文件中大量的dimen值。<br>但是它也有几个优点:<br>1.相对于屏幕分辨率适配,最小宽度适配是找到屏幕的最小宽度如果没有找到就会继续在valuse-sw<N>dp文件中找到相近匹配的。<br>2.最小宽度的dimens文件中使用dp作为基本单位更加灵活.</p>
+<h1 id="今日头条适配方案"><a href="#今日头条适配方案" class="headerlink" title="今日头条适配方案"></a>今日头条适配方案</h1><p>单位换算的源代码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * Converts an unpacked complex data value holding a dimension to its final floating </span></span><br><span class="line"><span class="comment">    * point value. The two parameters &lt;var&gt;unit&lt;/var&gt; and &lt;var&gt;value&lt;/var&gt;</span></span><br><span class="line"><span class="comment">    * are as in &#123;<span class="doctag">@link</span> #TYPE_DIMENSION&#125;.</span></span><br><span class="line"><span class="comment">    *  </span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> unit The unit to convert from.</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> value The value to apply the unit to.</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> metrics Current display metrics to use in the conversion -- </span></span><br><span class="line"><span class="comment">    *                supplies display density and scaling information.</span></span><br><span class="line"><span class="comment">    * </span></span><br><span class="line"><span class="comment">    * <span class="doctag">@return</span> The complex floating point value multiplied by the appropriate </span></span><br><span class="line"><span class="comment">    * metrics depending on its unit. </span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">float</span> <span class="title">applyDimension</span><span class="params">(<span class="keyword">int</span> unit, <span class="keyword">float</span> value,</span></span></span><br><span class="line"><span class="function"><span class="params">                                      DisplayMetrics metrics)</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       <span class="keyword">switch</span> (unit) &#123;</span><br><span class="line">       <span class="keyword">case</span> COMPLEX_UNIT_PX:</span><br><span class="line">           <span class="keyword">return</span> value;</span><br><span class="line">       <span class="keyword">case</span> COMPLEX_UNIT_DIP:</span><br><span class="line">           <span class="keyword">return</span> value * metrics.density;</span><br><span class="line">       <span class="keyword">case</span> COMPLEX_UNIT_SP:</span><br><span class="line">           <span class="keyword">return</span> value * metrics.scaledDensity;</span><br><span class="line">       <span class="keyword">case</span> COMPLEX_UNIT_PT:</span><br><span class="line">           <span class="keyword">return</span> value * metrics.xdpi * (<span class="number">1.0f</span>/<span class="number">72</span>);</span><br><span class="line">       <span class="keyword">case</span> COMPLEX_UNIT_IN:</span><br><span class="line">           <span class="keyword">return</span> value * metrics.xdpi;</span><br><span class="line">       <span class="keyword">case</span> COMPLEX_UNIT_MM:</span><br><span class="line">           <span class="keyword">return</span> value * metrics.xdpi * (<span class="number">1.0f</span>/<span class="number">25.4f</span>);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过修改系统像素的密度值<strong>density</strong>来达到适配我们设计图的效果。系统中是通过屏幕像素(displayMetrics.widthPixels/displayMetrics.heightPixels)/160=density.这里的160我们完全可以换成设计图的尺寸计算出我们自己的density密度然后将我们自己的密度赋值给displayMetrics.density。<br>如果是字体的适配没有修改的时候密度和density是相同的如果修改了字体的大小那密度就不同了这个时候我们可以监听字体大小是否修改来获取改变后的密度。<br>今日头条代码实例(推荐使用DP作为适配方案):</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 系统的Density</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">float</span> sNoncompatDensity;</span><br><span class="line"><span class="comment">// 系统的ScaledDensity</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">float</span> sNoncompatScaledDensity;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setCustomDensity</span><span class="params">(Activity activity, Application application)</span> </span>&#123;</span><br><span class="line">       DisplayMetrics displayMetrics = application.getResources().getDisplayMetrics();</span><br><span class="line">       <span class="keyword">if</span> (sNoncompatDensity == <span class="number">0</span>) &#123;</span><br><span class="line">           sNoncompatDensity = displayMetrics.density;</span><br><span class="line">           sNoncompatScaledDensity = displayMetrics.scaledDensity;</span><br><span class="line">           <span class="comment">// 监听在系统设置中切换字体</span></span><br><span class="line">           application.registerComponentCallbacks(<span class="keyword">new</span> ComponentCallbacks() &#123;</span><br><span class="line">               <span class="meta">@Override</span></span><br><span class="line">               <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onConfigurationChanged</span><span class="params">(Configuration newConfig)</span> </span>&#123;</span><br><span class="line">                   <span class="keyword">if</span> (newConfig != <span class="keyword">null</span> &amp;&amp; newConfig.fontScale &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                       sNoncompatScaledDensity=application.getResources().getDisplayMetrics().scaledDensity;</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line"></span><br><span class="line">               <span class="meta">@Override</span></span><br><span class="line">               <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onLowMemory</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">               &#125;</span><br><span class="line">           &#125;);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">// 此处以360dp的设计图作为例子</span></span><br><span class="line">       <span class="keyword">float</span> targetDensity=displayMetrics.widthPixels/<span class="number">360</span>;</span><br><span class="line">       <span class="keyword">float</span> targetScaledDensity=targetDensity*(sNoncompatScaledDensity/sNoncompatDensity);</span><br><span class="line">       <span class="keyword">int</span> targetDensityDpi= (<span class="keyword">int</span>) (<span class="number">160</span> * targetDensity);</span><br><span class="line">       displayMetrics.density = targetDensity;</span><br><span class="line">       displayMetrics.scaledDensity = targetScaledDensity;</span><br><span class="line">       displayMetrics.densityDpi = targetDensityDpi;</span><br><span class="line"></span><br><span class="line">       DisplayMetrics activityDisplayMetrics = activity.getResources().getDisplayMetrics();</span><br><span class="line">       activityDisplayMetrics.density = targetDensity;</span><br><span class="line">       activityDisplayMetrics.scaledDensity = targetScaledDensity;</span><br><span class="line">       activityDisplayMetrics.densityDpi = targetDensityDpi;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><a href="https://www.jianshu.com/p/1eeb0d8d1c86" target="_blank" rel="noopener">https://www.jianshu.com/p/1eeb0d8d1c86</a><br><a href="https://mp.weixin.qq.com/s/d9QCoBP6kV9VSWvVldVVwA" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/d9QCoBP6kV9VSWvVldVVwA</a></p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://joshuayingwhategr.github.io/2019/07/10/2019-7-10-%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D/" data-id="ckgafeqld002m9a9khkbw90h5" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-2019-5-23-Android多线程编程" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/05/23/2019-5-23-Android%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" class="article-date">
@@ -145,7 +197,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2019/05/23/2019-5-23-Android%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" data-id="ckgafe0bc002k5z9k5ig59ccr" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2019/05/23/2019-5-23-Android%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" data-id="ckgafeqlb002h9a9k1s5p5683" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" rel="tag">多线程编程</a></li></ul>
@@ -190,7 +242,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2019/05/20/2019-5-20-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%ADFuture%E5%92%8CFutureTask%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB/" data-id="ckgafe0bb002h5z9kf3x8csuy" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2019/05/20/2019-5-20-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%ADFuture%E5%92%8CFutureTask%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB/" data-id="ckgafeqlc002k9a9k80hefd26" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" rel="tag">多线程编程</a></li></ul>
@@ -229,7 +281,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2019/05/13/2019-5-13-CountDownLatch%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" data-id="ckgafe0ba002f5z9k14ng9hpk" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2019/05/13/2019-5-13-CountDownLatch%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" data-id="ckgafeqla002f9a9k2963brg4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" rel="tag">多线程编程</a></li></ul>
@@ -286,7 +338,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2019/04/27/2019-4-27-Bitmap%E4%BD%8D%E5%9B%BE%E4%BC%98%E5%8C%96%E5%A4%84%E7%90%86/" data-id="ckgafe0b9002a5z9kekalatr6" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2019/04/27/2019-4-27-Bitmap%E4%BD%8D%E5%9B%BE%E4%BC%98%E5%8C%96%E5%A4%84%E7%90%86/" data-id="ckgafeqla002d9a9k3dyzdodv" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -363,7 +415,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2019/04/16/2019-04-16-%E4%B8%8D%E6%98%AF%E5%B8%82%E5%9C%BA%E5%A4%B1%E7%81%B5%EF%BC%8C%E8%80%8C%E6%98%AF%E9%82%A3%E5%95%A5%E5%A4%B1%E7%81%B5/" data-id="ckgafe0ar00115z9kfgy1bsv8" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2019/04/16/2019-04-16-%E4%B8%8D%E6%98%AF%E5%B8%82%E5%9C%BA%E5%A4%B1%E7%81%B5%EF%BC%8C%E8%80%8C%E6%98%AF%E9%82%A3%E5%95%A5%E5%A4%B1%E7%81%B5/" data-id="ckgafeqkr00119a9k91wee7lb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/" rel="tag">仓央嘉措菜</a></li></ul>
@@ -455,7 +507,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2019/04/01/2019-04-01-Android%E5%B1%9E%E6%80%A7%E5%8A%A8%E7%94%BB%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" data-id="ckgafe0aq000z5z9kfrs7c8hq" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2019/04/01/2019-04-01-Android%E5%B1%9E%E6%80%A7%E5%8A%A8%E7%94%BB%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" data-id="ckgafeqkq000x9a9kfzlaegng" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -514,7 +566,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2019/03/14/2019-03-14-Android%20Service/" data-id="ckgafe0an000t5z9kga9o7ixc" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2019/03/14/2019-03-14-Android%20Service/" data-id="ckgafeqkr000z9a9k1nud8faf" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -578,7 +630,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2019/03/10/2019-03-10-Fragment%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/" data-id="ckgafe0ap000x5z9k16eg1sqq" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2019/03/10/2019-03-10-Fragment%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/" data-id="ckgafeqkm000v9a9kfgmdhls3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -668,60 +720,7 @@ private final List&lt;ViewHolder&gt;
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2019/02/20/2019-02-20-RecyclerView%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" data-id="ckgafe0ao000v5z9k6crofz77" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-2019-01-20-RecyclerView常见问题" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/01/20/2019-01-20-RecyclerView%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/" class="article-date">
-  <time datetime="2019-01-19T16:00:00.000Z" itemprop="datePublished">2019-01-20</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/01/20/2019-01-20-RecyclerView%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/">RecyclerView常见问题</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="RecyclerView设置了数据不显示"><a href="#RecyclerView设置了数据不显示" class="headerlink" title="RecyclerView设置了数据不显示"></a>RecyclerView设置了数据不显示</h2><p>当我们调用RecyclerView控件时，如果没有给它设置LayoutManager或者Adapter时 RecyclerView就不知道item布局到底要怎样显示(RecyclerVeiw中没有某认的显示方式)或者Adapter数据怎样填充在item上.<br>它就会报 <code>RecyclerView: No layout manager attached; skipping layout</code>或者<code>RecyclerView: No adapter attached; skipping layout</code><br>具体实例(LayoutManager)：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mRv &#x3D; findViewById(R.id.mRv);</span><br><span class="line">&#x2F;&#x2F;我们注释了这两行代码</span><br><span class="line">&#x2F;&#x2F;mRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));</span><br><span class="line">    mAdapter &#x3D; new Adapter();</span><br><span class="line">&#x2F;&#x2F;mRv.setAdapter(mAdapter);</span><br></pre></td></tr></table></figure>
-<h2 id="RecyclerView多次滚动后数据出现混乱"><a href="#RecyclerView多次滚动后数据出现混乱" class="headerlink" title="RecyclerView多次滚动后数据出现混乱"></a>RecyclerView多次滚动后数据出现混乱</h2><p>续…</p>
-<h2 id="获取当前item展示的位置"><a href="#获取当前item展示的位置" class="headerlink" title="获取当前item展示的位置"></a>获取当前item展示的位置</h2><p>有些时候我们需要当某个item滚动到顶部时，显示搜索框这样的需求.<br>可以通过在Adapter中的onBindViewHolder方法中获取当前界面中的item。<br>getLayoutPosition和getAdapterPosition。</p>
-<h2 id="异常-IndexOutOfBoundsException-Inconsistency-detected-Invalid-item-position-5-offset-5-state-9"><a href="#异常-IndexOutOfBoundsException-Inconsistency-detected-Invalid-item-position-5-offset-5-state-9" class="headerlink" title="异常:IndexOutOfBoundsException: Inconsistency detected. Invalid item position 5(offset:5).state:9"></a>异常:IndexOutOfBoundsException: Inconsistency detected. Invalid item position 5(offset:5).state:9</h2><p>产生这个异常的原因是Adapter数据源已经改变但是没有通知到RecyclerView.<br>解决的方法：当Adapter数据源改变时，立即调用Adapter.notifyXXX方法来刷新RecyclerView.<br>示例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Override public void onClick(View v) &#123;</span><br><span class="line">    mAdapter.removeMessage(5);</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">   public void removeMessage(int position) &#123;</span><br><span class="line">    if (stringList !&#x3D; null &amp;&amp; stringList.size() &gt; 0) &#123;</span><br><span class="line">      stringList.remove(position);</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;notifyItemRemoved(position);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="控制RecyclerView滑动的速度和item移动的位置"><a href="#控制RecyclerView滑动的速度和item移动的位置" class="headerlink" title="控制RecyclerView滑动的速度和item移动的位置"></a>控制RecyclerView滑动的速度和item移动的位置</h2><p>通常我们指定某个item移动通过调用RecyclerView的smoothScrollToPosition方法即可完成.<br>RecyclerView源码:    </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public void smoothScrollToPosition(int position) &#123;</span><br><span class="line">    if(!this.mLayoutFrozen) &#123;</span><br><span class="line">      if(this.mLayout &#x3D;&#x3D; null) &#123;</span><br><span class="line">        Log.e(&quot;RecyclerView&quot;, &quot;Cannot smooth scroll without a LayoutManager set. Call setLayoutManager with a non-null argument.&quot;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        this.mLayout.smoothScrollToPosition(this, this.mState, position);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<p>通过源码看出最终还是调用了LayoutManager的smoothScrollToPosition方法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public void smoothScrollToPosition(RecyclerView recyclerView, State state, int position) &#123;</span><br><span class="line">    LinearSmoothScroller linearSmoothScroller &#x3D; new LinearSmoothScroller(recyclerView.getContext());</span><br><span class="line">    linearSmoothScroller.setTargetPosition(position);</span><br><span class="line">    this.startSmoothScroll(linearSmoothScroller);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<p>在这里获取到LinearSmoothScroller的对象,然后调用setTargetPosition设置item到指定位置，最后执行滑动操作startSmoothScroll.<br>因此我们只要自定义RecyclerView的LayoutManager类,然后重写smoothScrollToPosition方法.<br>示例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">public class ScrollSpeedLinearLayoutManger extends LinearLayoutManager &#123;</span><br><span class="line">  public ScrollSpeedLinearLayoutManger(Context context) &#123;</span><br><span class="line">    super(context);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public ScrollSpeedLinearLayoutManger(Context context, int orientation, boolean reverseLayout) &#123;</span><br><span class="line">    super(context, orientation, reverseLayout);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public ScrollSpeedLinearLayoutManger(Context context, AttributeSet attrs,</span><br><span class="line">      int defStyleAttr,</span><br><span class="line">      int defStyleRes) &#123;</span><br><span class="line">    super(context, attrs, defStyleAttr, defStyleRes);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state,</span><br><span class="line">      int position) &#123;</span><br><span class="line">    Log.e(&quot;linksu&quot;,</span><br><span class="line">        &quot;smoothScrollToPosition(ScrollSpeedLinearLayoutManger.java:62)&quot;);</span><br><span class="line">    RecyclerView.SmoothScroller smoothScroller &#x3D;</span><br><span class="line">        new CenterSmoothScroller(recyclerView.getContext());</span><br><span class="line">    smoothScroller.setTargetPosition(position);</span><br><span class="line">    startSmoothScroll(smoothScroller);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  private class CenterSmoothScroller extends LinearSmoothScroller &#123;</span><br><span class="line"></span><br><span class="line">    CenterSmoothScroller(Context context) &#123;</span><br><span class="line">      super(context);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Nullable</span><br><span class="line">    @Override</span><br><span class="line">    public PointF computeScrollVectorForPosition(int targetPosition) &#123;</span><br><span class="line">      return ScrollSpeedLinearLayoutManger.this.computeScrollVectorForPosition(targetPosition);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 控制滑动的位置</span><br><span class="line">     *&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    public int calculateDtToFit(int viewStart, int viewEnd, int boxStart, int boxEnd,</span><br><span class="line">        int snapPreference) &#123;</span><br><span class="line">      &#x2F;&#x2F;return (boxStart + (boxEnd - boxStart) &#x2F; 2) - (viewStart + (viewEnd - viewStart) &#x2F; 2);</span><br><span class="line">      return (boxStart + (boxEnd - boxStart)) - (viewStart + (viewEnd - viewStart));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 控制滑动的速度</span><br><span class="line">     *&#x2F;</span><br><span class="line">    @Override protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) &#123;</span><br><span class="line">      return 1.5f;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected int getVerticalSnapPreference() &#123;</span><br><span class="line">      return SNAP_TO_START;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2019/01/20/2019-01-20-RecyclerView%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/" data-id="ckgafe0am000p5z9kcnyz2buw" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2019/02/20/2019-02-20-RecyclerView%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" data-id="ckgafeqkl000t9a9k59q92maw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -751,7 +750,7 @@ private final List&lt;ViewHolder&gt;
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Java/" style="font-size: 17.5px;">Java</a> <a href="/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/" style="font-size: 12.5px;">仓央嘉措菜</a> <a href="/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/" style="font-size: 15px;">吴主任的公众号</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" style="font-size: 15px;">多线程编程</a> <a href="/tags/%E8%A4%9A%E6%98%8E%E5%AE%87/" style="font-size: 10px;">褚明宇</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 17.5px;">计算机网络</a>
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Java/" style="font-size: 17.5px;">Java</a> <a href="/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/" style="font-size: 12.5px;">仓央嘉措菜</a> <a href="/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/" style="font-size: 15px;">吴主任的公众号</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" style="font-size: 15px;">多线程编程</a> <a href="/tags/%E8%A4%9A%E6%98%8E%E5%AE%87/" style="font-size: 10px;">褚明宇</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">计算机基础</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 17.5px;">计算机网络</a>
     </div>
   </div>
 
@@ -777,19 +776,19 @@ private final List&lt;ViewHolder&gt;
           </li>
         
           <li>
-            <a href="/2020/10/15/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/index/">tags/仓央嘉措菜/index</a>
-          </li>
-        
-          <li>
-            <a href="/2020/10/15/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/index/">tags/吴主任的公众号/index</a>
-          </li>
-        
-          <li>
             <a href="/2020/10/15/tags/Java/index/">tags/Java/index</a>
           </li>
         
           <li>
+            <a href="/2020/10/15/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/index/">tags/仓央嘉措菜/index</a>
+          </li>
+        
+          <li>
             <a href="/2020/10/15/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/index/">tags/多线程编程/index</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/15/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/index/">tags/吴主任的公众号/index</a>
           </li>
         
       </ul>
