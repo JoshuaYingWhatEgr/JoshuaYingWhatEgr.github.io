@@ -60,9 +60,9 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-fancybox/helpers/jquery.fancybox-thumbs" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-fancybox/helpers/jquery.fancybox-buttons" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/10/15/fancybox/helpers/jquery.fancybox-thumbs/" class="article-date">
+    <a href="/2020/10/15/fancybox/helpers/jquery.fancybox-buttons/" class="article-date">
   <time datetime="2020-10-15T03:18:44.736Z" itemprop="datePublished">2020-10-15</time>
 </a>
     
@@ -74,7 +74,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/15/fancybox/helpers/jquery.fancybox-thumbs/">fancybox/helpers/jquery.fancybox-thumbs</a>
+      <a class="article-title" href="/2020/10/15/fancybox/helpers/jquery.fancybox-buttons/">fancybox/helpers/jquery.fancybox-buttons</a>
     </h1>
   
 
@@ -82,65 +82,133 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        #fancybox-thumbs {
-	position: fixed;
-	left: 0;
-	width: 100%;
-	overflow: hidden;
-	z-index: 8050;
-}
+         /*!
+ * Buttons helper for fancyBox
+ * version: 1.0.5 (Mon, 15 Oct 2012)
+ * @requires fancyBox v2.0 or later
+ *
+ * Usage:
+ *     $(".fancybox").fancybox({
+ *         helpers : {
+ *             buttons: {
+ *                 position : 'top'
+ *             }
+ *         }
+ *     });
+ *
+ */
+;(function ($) {
+	//Shortcut for fancyBox object
+	var F = $.fancybox;
 
-#fancybox-thumbs.bottom {
-	bottom: 2px;
-}
+	//Add helper object
+	F.helpers.buttons = {
+		defaults : {
+			skipSingle : false, // disables if gallery contains single image
+			position   : 'top', // 'top' or 'bottom'
+			tpl        : '<div id="fancybox-buttons"><ul><li><a class="btnPrev" title="Previous" href="javascript:;"></a></li><li><a class="btnPlay" title="Start slideshow" href="javascript:;"></a></li><li><a class="btnNext" title="Next" href="javascript:;"></a></li><li><a class="btnToggle" title="Toggle size" href="javascript:;"></a></li><li><a class="btnClose" title="Close" href="javascript:;"></a></li></ul></div>'
+		},
 
-#fancybox-thumbs.top {
-	top: 2px;
-}
+		list : null,
+		buttons: null,
 
-#fancybox-thumbs ul {
-	position: relative;
-	list-style: none;
-	margin: 0;
-	padding: 0;
-}
+		beforeLoad: function (opts, obj) {
+			//Remove self if gallery do not have at least two items
 
-#fancybox-thumbs ul li {
-	float: left;
-	padding: 1px;
-	opacity: 0.5;
-}
+			if (opts.skipSingle && obj.group.length < 2) {
+				obj.helpers.buttons = false;
+				obj.closeBtn = true;
 
-#fancybox-thumbs ul li.active {
-	opacity: 0.75;
-	padding: 0;
-	border: 1px solid #fff;
-}
+				return;
+			}
 
-#fancybox-thumbs ul li:hover {
-	opacity: 1;
-}
+			//Increase top margin to give space for buttons
+			obj.margin[ opts.position === 'bottom' ? 2 : 0 ] += 30;
+		},
 
-#fancybox-thumbs ul li a {
-	display: block;
-	position: relative;
-	overflow: hidden;
-	border: 1px solid #222;
-	background: #111;
-	outline: none;
-}
+		onPlayStart: function () {
+			if (this.buttons) {
+				this.buttons.play.attr('title', 'Pause slideshow').addClass('btnPlayOn');
+			}
+		},
 
-#fancybox-thumbs ul li img {
-	display: block;
-	position: relative;
-	border: 0;
-	padding: 0;
-	max-width: none;
-}
+		onPlayEnd: function () {
+			if (this.buttons) {
+				this.buttons.play.attr('title', 'Start slideshow').removeClass('btnPlayOn');
+			}
+		},
+
+		afterShow: function (opts, obj) {
+			var buttons = this.buttons;
+
+			if (!buttons) {
+				this.list = $(opts.tpl).addClass(opts.position).appendTo('body');
+
+				buttons = {
+					prev   : this.list.find('.btnPrev').click( F.prev ),
+					next   : this.list.find('.btnNext').click( F.next ),
+					play   : this.list.find('.btnPlay').click( F.play ),
+					toggle : this.list.find('.btnToggle').click( F.toggle ),
+					close  : this.list.find('.btnClose').click( F.close )
+				}
+			}
+
+			//Prev
+			if (obj.index > 0 || obj.loop) {
+				buttons.prev.removeClass('btnDisabled');
+			} else {
+				buttons.prev.addClass('btnDisabled');
+			}
+
+			//Next / Play
+			if (obj.loop || obj.index < obj.group.length - 1) {
+				buttons.next.removeClass('btnDisabled');
+				buttons.play.removeClass('btnDisabled');
+
+			} else {
+				buttons.next.addClass('btnDisabled');
+				buttons.play.addClass('btnDisabled');
+			}
+
+			this.buttons = buttons;
+
+			this.onUpdate(opts, obj);
+		},
+
+		onUpdate: function (opts, obj) {
+			var toggle;
+
+			if (!this.buttons) {
+				return;
+			}
+
+			toggle = this.buttons.toggle.removeClass('btnDisabled btnToggleOn');
+
+			//Size toggle button
+			if (obj.canShrink) {
+				toggle.addClass('btnToggleOn');
+
+			} else if (!obj.canExpand) {
+				toggle.addClass('btnDisabled');
+			}
+		},
+
+		beforeClose: function () {
+			if (this.list) {
+				this.list.remove();
+			}
+
+			this.list    = null;
+			this.buttons = null;
+		}
+	};
+
+}(jQuery));
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/fancybox/helpers/jquery.fancybox-thumbs/" data-id="ckgaethk0000fwo9k25y18pck" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/fancybox/helpers/jquery.fancybox-buttons/" data-id="ckgaf74ja0038279k76ez73au" class="article-share-link">Share</a>
       
       
     </footer>
@@ -374,7 +442,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/fancybox/helpers/jquery.fancybox-media/" data-id="ckgaethk1000gwo9k7bnj99mu" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/fancybox/helpers/jquery.fancybox-media/" data-id="ckgaf74jb0039279k34fnd9h2" class="article-share-link">Share</a>
       
       
     </footer>
@@ -574,7 +642,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/fancybox/helpers/jquery.fancybox-thumbs/" data-id="ckgaethk1000hwo9kd2dldn0w" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/fancybox/helpers/jquery.fancybox-thumbs/" data-id="ckgaf74jc003a279kgl83979g" class="article-share-link">Share</a>
       
       
     </footer>
@@ -1984,412 +2052,7 @@ pre .javascript .function {
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/css/style/" data-id="ckgaethjg0004wo9ke0cy7t1n" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-archives/page/3/index" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/10/15/archives/page/3/index/" class="article-date">
-  <time datetime="2020-10-15T03:18:44.718Z" itemprop="datePublished">2020-10-15</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/15/archives/page/3/index/">archives/page/3/index</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  
-
-  
-  <title>Archives | JoshuaYingWhatEgr Blogs</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="JoshuaYingWhatEgr Blogs">
-<meta property="og:url" content="https://joshuayingwhategr.github.io/archives/page/3/index.html">
-<meta property="og:site_name" content="JoshuaYingWhatEgr Blogs">
-<meta property="og:locale" content="en_US">
-<meta property="article:author" content="JoshuaYingWhatEgr">
-<meta name="twitter:card" content="summary">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  
-<link rel="stylesheet" href="/css/style.css">
-
-<meta name="generator" content="Hexo 4.2.0"></head>
-
-<body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">JoshuaYingWhatEgr Blogs</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://joshuayingwhategr.github.io"></form>
-      </div>
-    </div>
-  </div>
-</header>
-      <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2019/07/10/2019-7-10-%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D/" class="archive-article-date">
-  <time datetime="2019-07-09T16:00:00.000Z" itemprop="datePublished">Jul 10</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/07/10/2019-7-10-%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D/">屏幕适配</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2019/05/23/2019-5-23-Android%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" class="archive-article-date">
-  <time datetime="2019-05-22T16:00:00.000Z" itemprop="datePublished">May 23</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/05/23/2019-5-23-Android%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/">Android多线程编程</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2019/05/20/2019-5-20-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%ADFuture%E5%92%8CFutureTask%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB/" class="archive-article-date">
-  <time datetime="2019-05-19T16:00:00.000Z" itemprop="datePublished">May 20</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/05/20/2019-5-20-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%ADFuture%E5%92%8CFutureTask%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB/">多线程中Future和FutureTask的区别和联系</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2019/05/13/2019-5-13-CountDownLatch%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" class="archive-article-date">
-  <time datetime="2019-05-12T16:00:00.000Z" itemprop="datePublished">May 13</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/05/13/2019-5-13-CountDownLatch%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/">CountDownLatch的使用场景</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2019/04/27/2019-4-27-Bitmap%E4%BD%8D%E5%9B%BE%E4%BC%98%E5%8C%96%E5%A4%84%E7%90%86/" class="archive-article-date">
-  <time datetime="2019-04-26T16:00:00.000Z" itemprop="datePublished">Apr 27</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/04/27/2019-4-27-Bitmap%E4%BD%8D%E5%9B%BE%E4%BC%98%E5%8C%96%E5%A4%84%E7%90%86/">Bitmap位图优化处理</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2019/04/16/2019-04-16-%E4%B8%8D%E6%98%AF%E5%B8%82%E5%9C%BA%E5%A4%B1%E7%81%B5%EF%BC%8C%E8%80%8C%E6%98%AF%E9%82%A3%E5%95%A5%E5%A4%B1%E7%81%B5/" class="archive-article-date">
-  <time datetime="2019-04-15T16:00:00.000Z" itemprop="datePublished">Apr 16</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/04/16/2019-04-16-%E4%B8%8D%E6%98%AF%E5%B8%82%E5%9C%BA%E5%A4%B1%E7%81%B5%EF%BC%8C%E8%80%8C%E6%98%AF%E9%82%A3%E5%95%A5%E5%A4%B1%E7%81%B5/">不是市场失灵，而是那啥失灵</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2019/04/01/2019-04-01-Android%E5%B1%9E%E6%80%A7%E5%8A%A8%E7%94%BB%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" class="archive-article-date">
-  <time datetime="2019-03-31T16:00:00.000Z" itemprop="datePublished">Apr 1</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/04/01/2019-04-01-Android%E5%B1%9E%E6%80%A7%E5%8A%A8%E7%94%BB%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">Android属性动画源码解析</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2019/03/14/2019-03-14-Android%20Service/" class="archive-article-date">
-  <time datetime="2019-03-13T16:00:00.000Z" itemprop="datePublished">Mar 14</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/03/14/2019-03-14-Android%20Service/">Android Service</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2019/03/10/2019-03-10-Fragment%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/" class="archive-article-date">
-  <time datetime="2019-03-09T16:00:00.000Z" itemprop="datePublished">Mar 10</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/03/10/2019-03-10-Fragment%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/">Fragment常见问题分析</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2019/02/20/2019-02-20-RecyclerView%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="archive-article-date">
-  <time datetime="2019-02-19T16:00:00.000Z" itemprop="datePublished">Feb 20</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/02/20/2019-02-20-RecyclerView%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">RecyclerView源码分析</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-
-  <nav id="page-nav">
-    
-    <a class="extend prev" rel="prev" href="/archives/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/archives/page/4/">4</a><a class="page-number" href="/archives/page/5/">5</a><a class="extend next" rel="next" href="/archives/page/4/">Next &amp;raquo;</a>
-  </nav>
-
-</section>
-        
-          <aside id="sidebar">
-  
-    
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Java/" style="font-size: 17.5px;">Java</a> <a href="/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/" style="font-size: 12.5px;">仓央嘉措菜</a> <a href="/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/" style="font-size: 15px;">吴主任的公众号</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" style="font-size: 15px;">多线程编程</a> <a href="/tags/%E8%A4%9A%E6%98%8E%E5%AE%87/" style="font-size: 10px;">褚明宇</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 17.5px;">计算机网络</a>
-    </div>
-  </div>
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2019/12/31/2019-12-31-%E8%BD%AF%E5%BC%95%E7%94%A8%E5%92%8C%E5%BC%B1%E5%BC%95%E7%94%A8/">软引用和弱引用</a>
-          </li>
-        
-          <li>
-            <a href="/2019/12/06/2019-12-06-Android%20TextView%E6%BA%90%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">Android TextView源代码分析</a>
-          </li>
-        
-          <li>
-            <a href="/2019/11/12/2019-11-12-Http%E8%AF%B7%E6%B1%82%E5%A4%B4Cache-Control%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/">Http请求头Cache-Control机制详解</a>
-          </li>
-        
-          <li>
-            <a href="/2019/11/05/2019-11-05-%E4%BB%80%E4%B9%88%E6%98%AF%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81%E5%92%8C%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3/">什么是子网掩码和默认网关</a>
-          </li>
-        
-          <li>
-            <a href="/2019/11/04/2019-11-04-%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%ADIP%E5%9C%B0%E5%9D%80%E6%98%AF%E6%80%8E%E6%A0%B7%E5%88%86%E9%85%8D%E7%9A%84/">计算机中IP地址是怎样分配的</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2020 JoshuaYingWhatEgr<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
-</footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-
-  
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-
-  
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-
-
-
-
-<script src="/js/script.js"></script>
-
-
-
-
-  </div>
-</body>
-</html>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/archives/page/3/index/" data-id="ckgaethkl0014wo9k9kxbhu1e" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/css/style/" data-id="ckgaf74io0031279k7q464mi9" class="article-share-link">Share</a>
       
       
     </footer>
@@ -2794,327 +2457,7 @@ pre .javascript .function {
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/archives/page/2/index/" data-id="ckgaethkl0015wo9kenxh7vh1" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-archives/page/5/index" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/10/15/archives/page/5/index/" class="article-date">
-  <time datetime="2020-10-15T03:18:44.718Z" itemprop="datePublished">2020-10-15</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/15/archives/page/5/index/">archives/page/5/index</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  
-
-  
-  <title>Archives | JoshuaYingWhatEgr Blogs</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="JoshuaYingWhatEgr Blogs">
-<meta property="og:url" content="https://joshuayingwhategr.github.io/archives/page/5/index.html">
-<meta property="og:site_name" content="JoshuaYingWhatEgr Blogs">
-<meta property="og:locale" content="en_US">
-<meta property="article:author" content="JoshuaYingWhatEgr">
-<meta name="twitter:card" content="summary">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  
-<link rel="stylesheet" href="/css/style.css">
-
-<meta name="generator" content="Hexo 4.2.0"></head>
-
-<body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">JoshuaYingWhatEgr Blogs</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://joshuayingwhategr.github.io"></form>
-      </div>
-    </div>
-  </div>
-</header>
-      <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2018/12/23/2018-12-23-Andorid%20Dialog%E4%B8%ADWindow%E7%9A%84%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B/" class="archive-article-date">
-  <time datetime="2018-12-22T16:00:00.000Z" itemprop="datePublished">Dec 23</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/23/2018-12-23-Andorid%20Dialog%E4%B8%ADWindow%E7%9A%84%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B/">Android Dialog中Window的创建过程</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2018/12/22/2018-12-22-Android%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8FWindow%E7%9A%84%E5%86%85%E9%83%A8%E6%9C%BA%E5%88%B6/" class="archive-article-date">
-  <time datetime="2018-12-21T16:00:00.000Z" itemprop="datePublished">Dec 22</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/22/2018-12-22-Android%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8FWindow%E7%9A%84%E5%86%85%E9%83%A8%E6%9C%BA%E5%88%B6/">Android应用程序Window的内部机制</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2018/12/17/2018-12-17-Art%20Developement%20Note%201%20/" class="archive-article-date">
-  <time datetime="2018-12-16T16:00:00.000Z" itemprop="datePublished">Dec 17</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/17/2018-12-17-Art%20Developement%20Note%201%20/">Art Development Note 1</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-      
-        </div></section>
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/12/23/2019-12-23-ActivityManagerService%E7%9A%84%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/" class="archive-article-date">
-  <time datetime="2017-12-22T16:00:00.000Z" itemprop="datePublished">Dec 23</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/12/23/2019-12-23-ActivityManagerService%E7%9A%84%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/">ActivityManagerService的启动流程</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/02/17/2017-02-17-Fragment%E6%87%92%E5%8A%A0%E8%BD%BD/" class="archive-article-date">
-  <time datetime="2017-02-16T16:00:00.000Z" itemprop="datePublished">Feb 17</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/02/17/2017-02-17-Fragment%E6%87%92%E5%8A%A0%E8%BD%BD/">Fragment懒加载</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-
-  <nav id="page-nav">
-    
-    <a class="extend prev" rel="prev" href="/archives/page/4/">&amp;laquo; Prev</a><a class="page-number" href="/archives/">1</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/3/">3</a><a class="page-number" href="/archives/page/4/">4</a><span class="page-number current">5</span>
-  </nav>
-
-</section>
-        
-          <aside id="sidebar">
-  
-    
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Java/" style="font-size: 17.5px;">Java</a> <a href="/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/" style="font-size: 12.5px;">仓央嘉措菜</a> <a href="/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/" style="font-size: 15px;">吴主任的公众号</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" style="font-size: 15px;">多线程编程</a> <a href="/tags/%E8%A4%9A%E6%98%8E%E5%AE%87/" style="font-size: 10px;">褚明宇</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 17.5px;">计算机网络</a>
-    </div>
-  </div>
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2019/12/31/2019-12-31-%E8%BD%AF%E5%BC%95%E7%94%A8%E5%92%8C%E5%BC%B1%E5%BC%95%E7%94%A8/">软引用和弱引用</a>
-          </li>
-        
-          <li>
-            <a href="/2019/12/06/2019-12-06-Android%20TextView%E6%BA%90%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">Android TextView源代码分析</a>
-          </li>
-        
-          <li>
-            <a href="/2019/11/12/2019-11-12-Http%E8%AF%B7%E6%B1%82%E5%A4%B4Cache-Control%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/">Http请求头Cache-Control机制详解</a>
-          </li>
-        
-          <li>
-            <a href="/2019/11/05/2019-11-05-%E4%BB%80%E4%B9%88%E6%98%AF%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81%E5%92%8C%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3/">什么是子网掩码和默认网关</a>
-          </li>
-        
-          <li>
-            <a href="/2019/11/04/2019-11-04-%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%ADIP%E5%9C%B0%E5%9D%80%E6%98%AF%E6%80%8E%E6%A0%B7%E5%88%86%E9%85%8D%E7%9A%84/">计算机中IP地址是怎样分配的</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2020 JoshuaYingWhatEgr<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
-</footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-
-  
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-
-  
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-
-
-
-
-<script src="/js/script.js"></script>
-
-
-
-
-  </div>
-</body>
-</html>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/archives/page/5/index/" data-id="ckgaethkm0016wo9kax1w7j1p" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/archives/page/2/index/" data-id="ckgaf74jq003x279k438zhi17" class="article-share-link">Share</a>
       
       
     </footer>
@@ -3529,7 +2872,732 @@ pre .javascript .function {
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/archives/page/4/index/" data-id="ckgaethko0017wo9kdn1f8817" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/archives/page/4/index/" data-id="ckgaf74jq003y279k6k6nd50c" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-archives/page/5/index" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/10/15/archives/page/5/index/" class="article-date">
+  <time datetime="2020-10-15T03:18:44.718Z" itemprop="datePublished">2020-10-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/10/15/archives/page/5/index/">archives/page/5/index</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Archives | JoshuaYingWhatEgr Blogs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="JoshuaYingWhatEgr Blogs">
+<meta property="og:url" content="https://joshuayingwhategr.github.io/archives/page/5/index.html">
+<meta property="og:site_name" content="JoshuaYingWhatEgr Blogs">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="JoshuaYingWhatEgr">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">JoshuaYingWhatEgr Blogs</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://joshuayingwhategr.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2018" class="archive-year">2018</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2018/12/23/2018-12-23-Andorid%20Dialog%E4%B8%ADWindow%E7%9A%84%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B/" class="archive-article-date">
+  <time datetime="2018-12-22T16:00:00.000Z" itemprop="datePublished">Dec 23</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/12/23/2018-12-23-Andorid%20Dialog%E4%B8%ADWindow%E7%9A%84%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B/">Android Dialog中Window的创建过程</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2018/12/22/2018-12-22-Android%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8FWindow%E7%9A%84%E5%86%85%E9%83%A8%E6%9C%BA%E5%88%B6/" class="archive-article-date">
+  <time datetime="2018-12-21T16:00:00.000Z" itemprop="datePublished">Dec 22</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/12/22/2018-12-22-Android%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8FWindow%E7%9A%84%E5%86%85%E9%83%A8%E6%9C%BA%E5%88%B6/">Android应用程序Window的内部机制</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2018/12/17/2018-12-17-Art%20Developement%20Note%201%20/" class="archive-article-date">
+  <time datetime="2018-12-16T16:00:00.000Z" itemprop="datePublished">Dec 17</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/12/17/2018-12-17-Art%20Developement%20Note%201%20/">Art Development Note 1</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+    
+    
+      
+        </div></section>
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2017" class="archive-year">2017</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2017/12/23/2019-12-23-ActivityManagerService%E7%9A%84%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/" class="archive-article-date">
+  <time datetime="2017-12-22T16:00:00.000Z" itemprop="datePublished">Dec 23</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2017/12/23/2019-12-23-ActivityManagerService%E7%9A%84%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/">ActivityManagerService的启动流程</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2017/02/17/2017-02-17-Fragment%E6%87%92%E5%8A%A0%E8%BD%BD/" class="archive-article-date">
+  <time datetime="2017-02-16T16:00:00.000Z" itemprop="datePublished">Feb 17</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2017/02/17/2017-02-17-Fragment%E6%87%92%E5%8A%A0%E8%BD%BD/">Fragment懒加载</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+  
+    </div></section>
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/archives/page/4/">&amp;laquo; Prev</a><a class="page-number" href="/archives/">1</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/3/">3</a><a class="page-number" href="/archives/page/4/">4</a><span class="page-number current">5</span>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Java/" style="font-size: 17.5px;">Java</a> <a href="/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/" style="font-size: 12.5px;">仓央嘉措菜</a> <a href="/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/" style="font-size: 15px;">吴主任的公众号</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" style="font-size: 15px;">多线程编程</a> <a href="/tags/%E8%A4%9A%E6%98%8E%E5%AE%87/" style="font-size: 10px;">褚明宇</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 17.5px;">计算机网络</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/12/31/2019-12-31-%E8%BD%AF%E5%BC%95%E7%94%A8%E5%92%8C%E5%BC%B1%E5%BC%95%E7%94%A8/">软引用和弱引用</a>
+          </li>
+        
+          <li>
+            <a href="/2019/12/06/2019-12-06-Android%20TextView%E6%BA%90%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">Android TextView源代码分析</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/12/2019-11-12-Http%E8%AF%B7%E6%B1%82%E5%A4%B4Cache-Control%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/">Http请求头Cache-Control机制详解</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/05/2019-11-05-%E4%BB%80%E4%B9%88%E6%98%AF%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81%E5%92%8C%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3/">什么是子网掩码和默认网关</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/04/2019-11-04-%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%ADIP%E5%9C%B0%E5%9D%80%E6%98%AF%E6%80%8E%E6%A0%B7%E5%88%86%E9%85%8D%E7%9A%84/">计算机中IP地址是怎样分配的</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 JoshuaYingWhatEgr<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/archives/page/5/index/" data-id="ckgaf74jr003z279kf5b63tu5" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-archives/page/3/index" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/10/15/archives/page/3/index/" class="article-date">
+  <time datetime="2020-10-15T03:18:44.718Z" itemprop="datePublished">2020-10-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/10/15/archives/page/3/index/">archives/page/3/index</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Archives | JoshuaYingWhatEgr Blogs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="JoshuaYingWhatEgr Blogs">
+<meta property="og:url" content="https://joshuayingwhategr.github.io/archives/page/3/index.html">
+<meta property="og:site_name" content="JoshuaYingWhatEgr Blogs">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="JoshuaYingWhatEgr">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">JoshuaYingWhatEgr Blogs</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://joshuayingwhategr.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2019" class="archive-year">2019</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2019/07/10/2019-7-10-%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D/" class="archive-article-date">
+  <time datetime="2019-07-09T16:00:00.000Z" itemprop="datePublished">Jul 10</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/07/10/2019-7-10-%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D/">屏幕适配</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2019/05/23/2019-5-23-Android%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" class="archive-article-date">
+  <time datetime="2019-05-22T16:00:00.000Z" itemprop="datePublished">May 23</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/05/23/2019-5-23-Android%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/">Android多线程编程</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2019/05/20/2019-5-20-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%ADFuture%E5%92%8CFutureTask%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB/" class="archive-article-date">
+  <time datetime="2019-05-19T16:00:00.000Z" itemprop="datePublished">May 20</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/05/20/2019-5-20-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%ADFuture%E5%92%8CFutureTask%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB/">多线程中Future和FutureTask的区别和联系</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2019/05/13/2019-5-13-CountDownLatch%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" class="archive-article-date">
+  <time datetime="2019-05-12T16:00:00.000Z" itemprop="datePublished">May 13</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/05/13/2019-5-13-CountDownLatch%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/">CountDownLatch的使用场景</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2019/04/27/2019-4-27-Bitmap%E4%BD%8D%E5%9B%BE%E4%BC%98%E5%8C%96%E5%A4%84%E7%90%86/" class="archive-article-date">
+  <time datetime="2019-04-26T16:00:00.000Z" itemprop="datePublished">Apr 27</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/04/27/2019-4-27-Bitmap%E4%BD%8D%E5%9B%BE%E4%BC%98%E5%8C%96%E5%A4%84%E7%90%86/">Bitmap位图优化处理</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2019/04/16/2019-04-16-%E4%B8%8D%E6%98%AF%E5%B8%82%E5%9C%BA%E5%A4%B1%E7%81%B5%EF%BC%8C%E8%80%8C%E6%98%AF%E9%82%A3%E5%95%A5%E5%A4%B1%E7%81%B5/" class="archive-article-date">
+  <time datetime="2019-04-15T16:00:00.000Z" itemprop="datePublished">Apr 16</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/04/16/2019-04-16-%E4%B8%8D%E6%98%AF%E5%B8%82%E5%9C%BA%E5%A4%B1%E7%81%B5%EF%BC%8C%E8%80%8C%E6%98%AF%E9%82%A3%E5%95%A5%E5%A4%B1%E7%81%B5/">不是市场失灵，而是那啥失灵</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2019/04/01/2019-04-01-Android%E5%B1%9E%E6%80%A7%E5%8A%A8%E7%94%BB%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" class="archive-article-date">
+  <time datetime="2019-03-31T16:00:00.000Z" itemprop="datePublished">Apr 1</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/04/01/2019-04-01-Android%E5%B1%9E%E6%80%A7%E5%8A%A8%E7%94%BB%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">Android属性动画源码解析</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2019/03/14/2019-03-14-Android%20Service/" class="archive-article-date">
+  <time datetime="2019-03-13T16:00:00.000Z" itemprop="datePublished">Mar 14</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/03/14/2019-03-14-Android%20Service/">Android Service</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2019/03/10/2019-03-10-Fragment%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/" class="archive-article-date">
+  <time datetime="2019-03-09T16:00:00.000Z" itemprop="datePublished">Mar 10</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/03/10/2019-03-10-Fragment%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/">Fragment常见问题分析</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2019/02/20/2019-02-20-RecyclerView%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="archive-article-date">
+  <time datetime="2019-02-19T16:00:00.000Z" itemprop="datePublished">Feb 20</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/02/20/2019-02-20-RecyclerView%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">RecyclerView源码分析</a>
+    </h1>
+  
+
+    </header>
+  </div>
+</article>
+  
+  
+    </div></section>
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/archives/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/archives/page/4/">4</a><a class="page-number" href="/archives/page/5/">5</a><a class="extend next" rel="next" href="/archives/page/4/">Next &amp;raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Java/" style="font-size: 17.5px;">Java</a> <a href="/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/" style="font-size: 12.5px;">仓央嘉措菜</a> <a href="/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/" style="font-size: 15px;">吴主任的公众号</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" style="font-size: 15px;">多线程编程</a> <a href="/tags/%E8%A4%9A%E6%98%8E%E5%AE%87/" style="font-size: 10px;">褚明宇</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 17.5px;">计算机网络</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/12/31/2019-12-31-%E8%BD%AF%E5%BC%95%E7%94%A8%E5%92%8C%E5%BC%B1%E5%BC%95%E7%94%A8/">软引用和弱引用</a>
+          </li>
+        
+          <li>
+            <a href="/2019/12/06/2019-12-06-Android%20TextView%E6%BA%90%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">Android TextView源代码分析</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/12/2019-11-12-Http%E8%AF%B7%E6%B1%82%E5%A4%B4Cache-Control%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/">Http请求头Cache-Control机制详解</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/05/2019-11-05-%E4%BB%80%E4%B9%88%E6%98%AF%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81%E5%92%8C%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3/">什么是子网掩码和默认网关</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/04/2019-11-04-%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%ADIP%E5%9C%B0%E5%9D%80%E6%98%AF%E6%80%8E%E6%A0%B7%E5%88%86%E9%85%8D%E7%9A%84/">计算机中IP地址是怎样分配的</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 JoshuaYingWhatEgr<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/archives/page/3/index/" data-id="ckgaf74js0040279k8rd7hhkm" class="article-share-link">Share</a>
       
       
     </footer>
@@ -3934,7 +4002,7 @@ pre .javascript .function {
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/archives/index/" data-id="ckgaethji0007wo9k6h3z0w20" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/archives/index/" data-id="ckgaf74il002x279kh8km0ulm" class="article-share-link">Share</a>
       
       
     </footer>
@@ -4339,7 +4407,7 @@ pre .javascript .function {
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/archives/2019/page/3/index/" data-id="ckgaethkr0019wo9k02tw84yj" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/archives/2019/page/3/index/" data-id="ckgaf74ju0041279k01vk7k4p" class="article-share-link">Share</a>
       
       
     </footer>
@@ -4367,7 +4435,7 @@ pre .javascript .function {
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Java/" style="font-size: 17.5px;">Java</a> <a href="/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/" style="font-size: 12.5px;">仓央嘉措菜</a> <a href="/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/" style="font-size: 15px;">吴主任的公众号</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" style="font-size: 15px;">多线程编程</a> <a href="/tags/%E8%A4%9A%E6%98%8E%E5%AE%87/" style="font-size: 10px;">褚明宇</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">计算机基础</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 17.5px;">计算机网络</a>
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Java/" style="font-size: 17.5px;">Java</a> <a href="/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/" style="font-size: 12.5px;">仓央嘉措菜</a> <a href="/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/" style="font-size: 15px;">吴主任的公众号</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" style="font-size: 15px;">多线程编程</a> <a href="/tags/%E8%A4%9A%E6%98%8E%E5%AE%87/" style="font-size: 10px;">褚明宇</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 17.5px;">计算机网络</a>
     </div>
   </div>
 
@@ -4405,7 +4473,7 @@ pre .javascript .function {
           </li>
         
           <li>
-            <a href="/2020/10/15/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/index/">tags/多线程编程/index</a>
+            <a href="/2020/10/15/tags/%E8%A4%9A%E6%98%8E%E5%AE%87/index/">tags/褚明宇/index</a>
           </li>
         
       </ul>
