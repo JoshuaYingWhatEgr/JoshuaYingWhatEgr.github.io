@@ -60,59 +60,6 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-2019-01-20-RecyclerView常见问题" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/01/20/2019-01-20-RecyclerView%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/" class="article-date">
-  <time datetime="2019-01-19T16:00:00.000Z" itemprop="datePublished">2019-01-20</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/01/20/2019-01-20-RecyclerView%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/">RecyclerView常见问题</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="RecyclerView设置了数据不显示"><a href="#RecyclerView设置了数据不显示" class="headerlink" title="RecyclerView设置了数据不显示"></a>RecyclerView设置了数据不显示</h2><p>当我们调用RecyclerView控件时，如果没有给它设置LayoutManager或者Adapter时 RecyclerView就不知道item布局到底要怎样显示(RecyclerVeiw中没有某认的显示方式)或者Adapter数据怎样填充在item上.<br>它就会报 <code>RecyclerView: No layout manager attached; skipping layout</code>或者<code>RecyclerView: No adapter attached; skipping layout</code><br>具体实例(LayoutManager)：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mRv &#x3D; findViewById(R.id.mRv);</span><br><span class="line">&#x2F;&#x2F;我们注释了这两行代码</span><br><span class="line">&#x2F;&#x2F;mRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));</span><br><span class="line">    mAdapter &#x3D; new Adapter();</span><br><span class="line">&#x2F;&#x2F;mRv.setAdapter(mAdapter);</span><br></pre></td></tr></table></figure>
-<h2 id="RecyclerView多次滚动后数据出现混乱"><a href="#RecyclerView多次滚动后数据出现混乱" class="headerlink" title="RecyclerView多次滚动后数据出现混乱"></a>RecyclerView多次滚动后数据出现混乱</h2><p>续…</p>
-<h2 id="获取当前item展示的位置"><a href="#获取当前item展示的位置" class="headerlink" title="获取当前item展示的位置"></a>获取当前item展示的位置</h2><p>有些时候我们需要当某个item滚动到顶部时，显示搜索框这样的需求.<br>可以通过在Adapter中的onBindViewHolder方法中获取当前界面中的item。<br>getLayoutPosition和getAdapterPosition。</p>
-<h2 id="异常-IndexOutOfBoundsException-Inconsistency-detected-Invalid-item-position-5-offset-5-state-9"><a href="#异常-IndexOutOfBoundsException-Inconsistency-detected-Invalid-item-position-5-offset-5-state-9" class="headerlink" title="异常:IndexOutOfBoundsException: Inconsistency detected. Invalid item position 5(offset:5).state:9"></a>异常:IndexOutOfBoundsException: Inconsistency detected. Invalid item position 5(offset:5).state:9</h2><p>产生这个异常的原因是Adapter数据源已经改变但是没有通知到RecyclerView.<br>解决的方法：当Adapter数据源改变时，立即调用Adapter.notifyXXX方法来刷新RecyclerView.<br>示例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Override public void onClick(View v) &#123;</span><br><span class="line">    mAdapter.removeMessage(5);</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">   public void removeMessage(int position) &#123;</span><br><span class="line">    if (stringList !&#x3D; null &amp;&amp; stringList.size() &gt; 0) &#123;</span><br><span class="line">      stringList.remove(position);</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;notifyItemRemoved(position);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="控制RecyclerView滑动的速度和item移动的位置"><a href="#控制RecyclerView滑动的速度和item移动的位置" class="headerlink" title="控制RecyclerView滑动的速度和item移动的位置"></a>控制RecyclerView滑动的速度和item移动的位置</h2><p>通常我们指定某个item移动通过调用RecyclerView的smoothScrollToPosition方法即可完成.<br>RecyclerView源码:    </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public void smoothScrollToPosition(int position) &#123;</span><br><span class="line">    if(!this.mLayoutFrozen) &#123;</span><br><span class="line">      if(this.mLayout &#x3D;&#x3D; null) &#123;</span><br><span class="line">        Log.e(&quot;RecyclerView&quot;, &quot;Cannot smooth scroll without a LayoutManager set. Call setLayoutManager with a non-null argument.&quot;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        this.mLayout.smoothScrollToPosition(this, this.mState, position);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<p>通过源码看出最终还是调用了LayoutManager的smoothScrollToPosition方法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public void smoothScrollToPosition(RecyclerView recyclerView, State state, int position) &#123;</span><br><span class="line">    LinearSmoothScroller linearSmoothScroller &#x3D; new LinearSmoothScroller(recyclerView.getContext());</span><br><span class="line">    linearSmoothScroller.setTargetPosition(position);</span><br><span class="line">    this.startSmoothScroll(linearSmoothScroller);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<p>在这里获取到LinearSmoothScroller的对象,然后调用setTargetPosition设置item到指定位置，最后执行滑动操作startSmoothScroll.<br>因此我们只要自定义RecyclerView的LayoutManager类,然后重写smoothScrollToPosition方法.<br>示例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">public class ScrollSpeedLinearLayoutManger extends LinearLayoutManager &#123;</span><br><span class="line">  public ScrollSpeedLinearLayoutManger(Context context) &#123;</span><br><span class="line">    super(context);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public ScrollSpeedLinearLayoutManger(Context context, int orientation, boolean reverseLayout) &#123;</span><br><span class="line">    super(context, orientation, reverseLayout);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public ScrollSpeedLinearLayoutManger(Context context, AttributeSet attrs,</span><br><span class="line">      int defStyleAttr,</span><br><span class="line">      int defStyleRes) &#123;</span><br><span class="line">    super(context, attrs, defStyleAttr, defStyleRes);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state,</span><br><span class="line">      int position) &#123;</span><br><span class="line">    Log.e(&quot;linksu&quot;,</span><br><span class="line">        &quot;smoothScrollToPosition(ScrollSpeedLinearLayoutManger.java:62)&quot;);</span><br><span class="line">    RecyclerView.SmoothScroller smoothScroller &#x3D;</span><br><span class="line">        new CenterSmoothScroller(recyclerView.getContext());</span><br><span class="line">    smoothScroller.setTargetPosition(position);</span><br><span class="line">    startSmoothScroll(smoothScroller);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  private class CenterSmoothScroller extends LinearSmoothScroller &#123;</span><br><span class="line"></span><br><span class="line">    CenterSmoothScroller(Context context) &#123;</span><br><span class="line">      super(context);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Nullable</span><br><span class="line">    @Override</span><br><span class="line">    public PointF computeScrollVectorForPosition(int targetPosition) &#123;</span><br><span class="line">      return ScrollSpeedLinearLayoutManger.this.computeScrollVectorForPosition(targetPosition);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 控制滑动的位置</span><br><span class="line">     *&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    public int calculateDtToFit(int viewStart, int viewEnd, int boxStart, int boxEnd,</span><br><span class="line">        int snapPreference) &#123;</span><br><span class="line">      &#x2F;&#x2F;return (boxStart + (boxEnd - boxStart) &#x2F; 2) - (viewStart + (viewEnd - viewStart) &#x2F; 2);</span><br><span class="line">      return (boxStart + (boxEnd - boxStart)) - (viewStart + (viewEnd - viewStart));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 控制滑动的速度</span><br><span class="line">     *&#x2F;</span><br><span class="line">    @Override protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) &#123;</span><br><span class="line">      return 1.5f;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected int getVerticalSnapPreference() &#123;</span><br><span class="line">      return SNAP_TO_START;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2019/01/20/2019-01-20-RecyclerView%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/" data-id="ckgafeqkk000p9a9kce5k24k1" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
     <article id="post-2019-01-4-Activity中Windowd的创建过程" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/01/04/2019-01-4-Activity%E4%B8%ADWindowd%E7%9A%84%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B/" class="article-date">
@@ -151,7 +98,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2019/01/04/2019-01-4-Activity%E4%B8%ADWindowd%E7%9A%84%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B/" data-id="ckgafeqkk000r9a9k4rhjeicg" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2019/01/04/2019-01-4-Activity%E4%B8%ADWindowd%E7%9A%84%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B/" data-id="ckgaffsyc000rcd9k40214h41" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -215,7 +162,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2019/01/03/2019-01-03-syncTask%E7%9A%84%E5%B7%A5%E4%BD%9C%E8%BF%87%E7%A8%8B/" data-id="ckgafeqki000l9a9ke7gr7hbr" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2019/01/03/2019-01-03-syncTask%E7%9A%84%E5%B7%A5%E4%BD%9C%E8%BF%87%E7%A8%8B/" data-id="ckgaffsy9000lcd9k2g6f9udf" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -272,7 +219,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2019/01/02/2019-01-02-Okhttp%E5%BC%82%E6%AD%A5%E8%AF%B7%E6%B1%82%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" data-id="ckgafeqkh000j9a9ka6bchhcf" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2019/01/02/2019-01-02-Okhttp%E5%BC%82%E6%AD%A5%E8%AF%B7%E6%B1%82%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" data-id="ckgaffsy8000jcd9kasci635m" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -346,7 +293,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2018/12/31/2018-12-31-BroadCastReceiver%E7%9A%84%E5%B7%A5%E4%BD%9C%E8%BF%87%E7%A8%8B/" data-id="ckgafeqke000h9a9kg3d2dtow" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2018/12/31/2018-12-31-BroadCastReceiver%E7%9A%84%E5%B7%A5%E4%BD%9C%E8%BF%87%E7%A8%8B/" data-id="ckgaffsy6000hcd9k3sxs6dxk" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -416,7 +363,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2018/12/29/2018-12-29-Service%E7%9A%84%E7%BB%91%E5%AE%9A%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90/" data-id="ckgafeqkd000f9a9k8qo82npz" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2018/12/29/2018-12-29-Service%E7%9A%84%E7%BB%91%E5%AE%9A%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90/" data-id="ckgaffsy1000fcd9kaeq3d7b5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -479,7 +426,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2018/12/28/2018-12-28-Service%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90/" data-id="ckgafeqkc000d9a9k0nzt2o9u" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2018/12/28/2018-12-28-Service%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90/" data-id="ckgaffsy1000dcd9kh0wj914h" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -541,7 +488,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2018/12/27/2018-12-27-Activity%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/" data-id="ckgafeqka00089a9k8ogbevhj" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2018/12/27/2018-12-27-Activity%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/" data-id="ckgaffsxy0008cd9kce6n7oro" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -657,7 +604,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2018/12/27/2018-12-27-Android%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90/" data-id="ckgafeqkb000a9a9k3n1vcg9l" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2018/12/27/2018-12-27-Android%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90/" data-id="ckgaffsxz000acd9kcs9ea1eu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -718,7 +665,66 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://joshuayingwhategr.github.io/2018/12/24/2018-12-24-Toast%E7%9A%84Window%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B/" data-id="ckgafeqk800059a9kcvl68v66" class="article-share-link">Share</a>
+      <a data-url="https://joshuayingwhategr.github.io/2018/12/24/2018-12-24-Toast%E7%9A%84Window%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B/" data-id="ckgaffsxw0005cd9ka2ab0yx4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2018-12-23-Andorid Dialog中Window的创建过程" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/23/2018-12-23-Andorid%20Dialog%E4%B8%ADWindow%E7%9A%84%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B/" class="article-date">
+  <time datetime="2018-12-22T16:00:00.000Z" itemprop="datePublished">2018-12-23</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/23/2018-12-23-Andorid%20Dialog%E4%B8%ADWindow%E7%9A%84%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B/">Android Dialog中Window的创建过程</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Dialog的使用方式"><a href="#Dialog的使用方式" class="headerlink" title="Dialog的使用方式"></a>Dialog的使用方式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Dialog customDialog &#x3D; new Dialog(this);</span><br><span class="line">    LinearLayout ll &#x3D; new LinearLayout(this);</span><br><span class="line">    ll.setOrientation(LinearLayout.VERTICAL);</span><br><span class="line">    ll.setGravity(Gravity.CENTER);</span><br><span class="line">    TextView title &#x3D; new TextView(this);</span><br><span class="line">    title.setText(&quot;标题&quot;);</span><br><span class="line">    Button clickBtn &#x3D; new Button(this);</span><br><span class="line">    clickBtn.setOnClickListener(new View.OnClickListener() &#123;</span><br><span class="line">      @Override public void onClick(View v) &#123;</span><br><span class="line">        Toast.makeText(MainActivity.this, &quot;点击了&quot;, Toast.LENGTH_SHORT).show();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    ll.addView(title);</span><br><span class="line">    ll.addView(clickBtn);</span><br><span class="line">    customDialog.setContentView(ll);</span><br><span class="line">    customDialog.show();</span><br></pre></td></tr></table></figure>
+<h2 id="创建Window"><a href="#创建Window" class="headerlink" title="创建Window"></a>创建Window</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">Dialog(@NonNull Context context, @StyleRes int themeResId, boolean createContextThemeWrapper) &#123;</span><br><span class="line">       if (createContextThemeWrapper) &#123;</span><br><span class="line">           if (themeResId &#x3D;&#x3D; ResourceId.ID_NULL) &#123;</span><br><span class="line">               final TypedValue outValue &#x3D; new TypedValue();</span><br><span class="line">               context.getTheme().resolveAttribute(R.attr.dialogTheme, outValue, true);</span><br><span class="line">               themeResId &#x3D; outValue.resourceId;</span><br><span class="line">           &#125;</span><br><span class="line">           mContext &#x3D; new ContextThemeWrapper(context, themeResId);</span><br><span class="line">       &#125; else &#123;</span><br><span class="line">           mContext &#x3D; context;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       mWindowManager &#x3D; (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);</span><br><span class="line"></span><br><span class="line">       final Window w &#x3D; new PhoneWindow(mContext);</span><br><span class="line">       mWindow &#x3D; w;</span><br><span class="line">       w.setCallback(this);</span><br><span class="line">       w.setOnWindowDismissedCallback(this);</span><br><span class="line">       w.setOnWindowSwipeDismissedCallback(() -&gt; &#123;</span><br><span class="line">           if (mCancelable) &#123;</span><br><span class="line">               cancel();</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;);</span><br><span class="line">       w.setWindowManager(mWindowManager, null, null);</span><br><span class="line">       w.setGravity(Gravity.CENTER);</span><br><span class="line"></span><br><span class="line">       mListenersHandler &#x3D; new ListenersHandler(this);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>从上面代码中可以知道，这里获取到了PhoneWindow的对象，PhoneWindow继承自Window.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">final Window w &#x3D; new PhoneWindow(mContext);</span><br><span class="line">        mWindow &#x3D; w;</span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line">## 将Dialog的视图添加到DecorView中</span><br></pre></td></tr></table></figure>
+<p>/**<br>     * Set the screen content to an explicit view.  This view is placed<br>     * directly into the screen’s view hierarchy.  It can itself be a complex<br>     * view hierarchy.<br>     *<br>     * @param view The desired content to display.<br>     */<br>    public void setContentView(@NonNull View view) {<br>        mWindow.setContentView(view);<br>    }</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">这里将我们在上面创建的Windon对象调用setContentView将布局添加到DecorView中。</span><br><span class="line"></span><br><span class="line">## 将Dialog视图添加到DecorView并显示出来</span><br></pre></td></tr></table></figure>
+<p> /**<br>     * Start the dialog and display it on screen.  The window is placed in the<br>     * application layer and opaque.  Note that you should not override this<br>     * method to do initialization when the dialog is shown, instead implement<br>     * that in {@link #onStart}.<br>     */<br>    public void show() {<br>        if (mShowing) {<br>            if (mDecor != null) {<br>                if (mWindow.hasFeature(Window.FEATURE_ACTION_BAR)) {<br>                    mWindow.invalidatePanelMenu(Window.FEATURE_ACTION_BAR);<br>                }<br>                mDecor.setVisibility(View.VISIBLE);<br>            }<br>            return;<br>        }</p>
+<pre><code>    mCanceled = false;
+
+    if (!mCreated) {
+        dispatchOnCreate(null);
+    } else {
+        // Fill the DecorView in on any configuration changes that
+        // may have occured while it was removed from the WindowManager.
+        final Configuration config = mContext.getResources().getConfiguration();
+        mWindow.getDecorView().dispatchConfigurationChanged(config);
+    }
+
+    onStart();
+    mDecor = mWindow.getDecorView();
+    mWindowManager.addView(mDecor, l);
+}</code></pre><pre><code>通过WindowManager将DecorView添加到Window中.</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://joshuayingwhategr.github.io/2018/12/23/2018-12-23-Andorid%20Dialog%E4%B8%ADWindow%E7%9A%84%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B/" data-id="ckgaffsxv0004cd9kfhoy235i" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li></ul>
@@ -748,7 +754,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Java/" style="font-size: 17.5px;">Java</a> <a href="/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/" style="font-size: 12.5px;">仓央嘉措菜</a> <a href="/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/" style="font-size: 15px;">吴主任的公众号</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" style="font-size: 15px;">多线程编程</a> <a href="/tags/%E8%A4%9A%E6%98%8E%E5%AE%87/" style="font-size: 10px;">褚明宇</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">计算机基础</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 17.5px;">计算机网络</a>
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Java/" style="font-size: 17.5px;">Java</a> <a href="/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/" style="font-size: 12.5px;">仓央嘉措菜</a> <a href="/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/" style="font-size: 15px;">吴主任的公众号</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" style="font-size: 15px;">多线程编程</a> <a href="/tags/%E8%A4%9A%E6%98%8E%E5%AE%87/" style="font-size: 10px;">褚明宇</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 17.5px;">计算机网络</a>
     </div>
   </div>
 
@@ -782,11 +788,11 @@
           </li>
         
           <li>
-            <a href="/2020/10/15/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/index/">tags/多线程编程/index</a>
+            <a href="/2020/10/15/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/index/">tags/吴主任的公众号/index</a>
           </li>
         
           <li>
-            <a href="/2020/10/15/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/index/">tags/吴主任的公众号/index</a>
+            <a href="/2020/10/15/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/index/">tags/多线程编程/index</a>
           </li>
         
       </ul>
