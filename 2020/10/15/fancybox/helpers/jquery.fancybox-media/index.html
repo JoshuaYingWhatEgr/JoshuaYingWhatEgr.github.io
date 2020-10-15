@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>fancybox/helpers/jquery.fancybox-media | JoshuaYingWhatEgr Blogs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="&#x2F;*!  * Media helper for fancyBox  * version: 1.0.6 (Fri, 14 Jun 2013)  * @requires fancyBox v2.0 or later  *  * Usage:  *     $(&quot;.fancybox&quot;).fancybox({  *         helpers : {  *             media: tru">
+<meta property="og:type" content="article">
+<meta property="og:title" content="fancybox&#x2F;helpers&#x2F;jquery.fancybox-media">
+<meta property="og:url" content="https://joshuayingwhategr.github.io/2020/10/15/fancybox/helpers/jquery.fancybox-media/index.html">
+<meta property="og:site_name" content="JoshuaYingWhatEgr Blogs">
+<meta property="og:description" content="&#x2F;*!  * Media helper for fancyBox  * version: 1.0.6 (Fri, 14 Jun 2013)  * @requires fancyBox v2.0 or later  *  * Usage:  *     $(&quot;.fancybox&quot;).fancybox({  *         helpers : {  *             media: tru">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-10-15T03:18:44.736Z">
+<meta property="article:modified_time" content="2020-10-15T03:18:44.736Z">
+<meta property="article:author" content="JoshuaYingWhatEgr">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">JoshuaYingWhatEgr Blogs</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://joshuayingwhategr.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-fancybox/helpers/jquery.fancybox-media" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/10/15/fancybox/helpers/jquery.fancybox-media/" class="article-date">
+  <time datetime="2020-10-15T03:18:44.736Z" itemprop="datePublished">2020-10-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      fancybox/helpers/jquery.fancybox-media
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        /*!
+ * Media helper for fancyBox
+ * version: 1.0.6 (Fri, 14 Jun 2013)
+ * @requires fancyBox v2.0 or later
+ *
+ * Usage:
+ *     $(".fancybox").fancybox({
+ *         helpers : {
+ *             media: true
+ *         }
+ *     });
+ *
+ * Set custom URL parameters:
+ *     $(".fancybox").fancybox({
+ *         helpers : {
+ *             media: {
+ *                 youtube : {
+ *                     params : {
+ *                         autoplay : 0
+ *                     }
+ *                 }
+ *             }
+ *         }
+ *     });
+ *
+ * Or:
+ *     $(".fancybox").fancybox({,
+ *         helpers : {
+ *             media: true
+ *         },
+ *         youtube : {
+ *             autoplay: 0
+ *         }
+ *     });
+ *
+ *  Supports:
+ *
+ *      Youtube
+ *          http://www.youtube.com/watch?v=opj24KnzrWo
+ *          http://www.youtube.com/embed/opj24KnzrWo
+ *          http://youtu.be/opj24KnzrWo
+ *			http://www.youtube-nocookie.com/embed/opj24KnzrWo
+ *      Vimeo
+ *          http://vimeo.com/40648169
+ *          http://vimeo.com/channels/staffpicks/38843628
+ *          http://vimeo.com/groups/surrealism/videos/36516384
+ *          http://player.vimeo.com/video/45074303
+ *      Metacafe
+ *          http://www.metacafe.com/watch/7635964/dr_seuss_the_lorax_movie_trailer/
+ *          http://www.metacafe.com/watch/7635964/
+ *      Dailymotion
+ *          http://www.dailymotion.com/video/xoytqh_dr-seuss-the-lorax-premiere_people
+ *      Twitvid
+ *          http://twitvid.com/QY7MD
+ *      Twitpic
+ *          http://twitpic.com/7p93st
+ *      Instagram
+ *          http://instagr.am/p/IejkuUGxQn/
+ *          http://instagram.com/p/IejkuUGxQn/
+ *      Google maps
+ *          http://maps.google.com/maps?q=Eiffel+Tower,+Avenue+Gustave+Eiffel,+Paris,+France&t=h&z=17
+ *          http://maps.google.com/?ll=48.857995,2.294297&spn=0.007666,0.021136&t=m&z=16
+ *          http://maps.google.com/?ll=48.859463,2.292626&spn=0.000965,0.002642&t=m&z=19&layer=c&cbll=48.859524,2.292532&panoid=YJ0lq28OOy3VT2IqIuVY0g&cbp=12,151.58,,0,-15.56
+ */
+;(function ($) {
+	"use strict";
+
+	//Shortcut for fancyBox object
+	var F = $.fancybox,
+		format = function( url, rez, params ) {
+			params = params || '';
+
+			if ( $.type( params ) === "object" ) {
+				params = $.param(params, true);
+			}
+
+			$.each(rez, function(key, value) {
+				url = url.replace( '$' + key, value || '' );
+			});
+
+			if (params.length) {
+				url += ( url.indexOf('?') > 0 ? '&' : '?' ) + params;
+			}
+
+			return url;
+		};
+
+	//Add helper object
+	F.helpers.media = {
+		defaults : {
+			youtube : {
+				matcher : /(youtube\.com|youtu\.be|youtube-nocookie\.com)\/(watch\?v=|v\/|u\/|embed\/?)?(videoseries\?list=(.*)|[\w-]{11}|\?listType=(.*)&list=(.*)).*/i,
+				params  : {
+					autoplay    : 1,
+					autohide    : 1,
+					fs          : 1,
+					rel         : 0,
+					hd          : 1,
+					wmode       : 'opaque',
+					enablejsapi : 1
+				},
+				type : 'iframe',
+				url  : '//www.youtube.com/embed/$3'
+			},
+			vimeo : {
+				matcher : /(?:vimeo(?:pro)?.com)\/(?:[^\d]+)?(\d+)(?:.*)/,
+				params  : {
+					autoplay      : 1,
+					hd            : 1,
+					show_title    : 1,
+					show_byline   : 1,
+					show_portrait : 0,
+					fullscreen    : 1
+				},
+				type : 'iframe',
+				url  : '//player.vimeo.com/video/$1'
+			},
+			metacafe : {
+				matcher : /metacafe.com\/(?:watch|fplayer)\/([\w\-]{1,10})/,
+				params  : {
+					autoPlay : 'yes'
+				},
+				type : 'swf',
+				url  : function( rez, params, obj ) {
+					obj.swf.flashVars = 'playerVars=' + $.param( params, true );
+
+					return '//www.metacafe.com/fplayer/' + rez[1] + '/.swf';
+				}
+			},
+			dailymotion : {
+				matcher : /dailymotion.com\/video\/(.*)\/?(.*)/,
+				params  : {
+					additionalInfos : 0,
+					autoStart : 1
+				},
+				type : 'swf',
+				url  : '//www.dailymotion.com/swf/video/$1'
+			},
+			twitvid : {
+				matcher : /twitvid\.com\/([a-zA-Z0-9_\-\?\=]+)/i,
+				params  : {
+					autoplay : 0
+				},
+				type : 'iframe',
+				url  : '//www.twitvid.com/embed.php?guid=$1'
+			},
+			twitpic : {
+				matcher : /twitpic\.com\/(?!(?:place|photos|events)\/)([a-zA-Z0-9\?\=\-]+)/i,
+				type : 'image',
+				url  : '//twitpic.com/show/full/$1/'
+			},
+			instagram : {
+				matcher : /(instagr\.am|instagram\.com)\/p\/([a-zA-Z0-9_\-]+)\/?/i,
+				type : 'image',
+				url  : '//$1/p/$2/media/?size=l'
+			},
+			google_maps : {
+				matcher : /maps\.google\.([a-z]{2,3}(\.[a-z]{2})?)\/(\?ll=|maps\?)(.*)/i,
+				type : 'iframe',
+				url  : function( rez ) {
+					return '//maps.google.' + rez[1] + '/' + rez[3] + '' + rez[4] + '&output=' + (rez[4].indexOf('layer=c') > 0 ? 'svembed' : 'embed');
+				}
+			}
+		},
+
+		beforeLoad : function(opts, obj) {
+			var url   = obj.href || '',
+				type  = false,
+				what,
+				item,
+				rez,
+				params;
+
+			for (what in opts) {
+				if (opts.hasOwnProperty(what)) {
+					item = opts[ what ];
+					rez  = url.match( item.matcher );
+
+					if (rez) {
+						type   = item.type;
+						params = $.extend(true, {}, item.params, obj[ what ] || ($.isPlainObject(opts[ what ]) ? opts[ what ].params : null));
+
+						url = $.type( item.url ) === "function" ? item.url.call( this, rez, params, obj ) : format( item.url, rez, params );
+
+						break;
+					}
+				}
+			}
+
+			if (type) {
+				obj.href = url;
+				obj.type = type;
+
+				obj.autoHeight = false;
+			}
+		}
+	};
+
+}(jQuery));
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/fancybox/helpers/jquery.fancybox-media/" data-id="ckgaethk1000gwo9k7bnj99mu" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/10/15/fancybox/helpers/jquery.fancybox-thumbs/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          fancybox/helpers/jquery.fancybox-thumbs
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/10/15/fancybox/helpers/jquery.fancybox-thumbs/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">fancybox/helpers/jquery.fancybox-thumbs</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Java/" style="font-size: 17.5px;">Java</a> <a href="/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/" style="font-size: 12.5px;">仓央嘉措菜</a> <a href="/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/" style="font-size: 15px;">吴主任的公众号</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" style="font-size: 15px;">多线程编程</a> <a href="/tags/%E8%A4%9A%E6%98%8E%E5%AE%87/" style="font-size: 10px;">褚明宇</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">计算机基础</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 17.5px;">计算机网络</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/10/15/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/index/">tags/计算机网络/index</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/15/tags/Java/index/">tags/Java/index</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/15/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/index/">tags/吴主任的公众号/index</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/15/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/index/">tags/仓央嘉措菜/index</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/15/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/index/">tags/多线程编程/index</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 JoshuaYingWhatEgr<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

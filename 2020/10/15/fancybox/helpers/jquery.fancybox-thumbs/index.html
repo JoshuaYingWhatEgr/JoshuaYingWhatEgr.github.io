@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>fancybox/helpers/jquery.fancybox-thumbs | JoshuaYingWhatEgr Blogs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="&#x2F;*!  * Thumbnail helper for fancyBox  * version: 1.0.7 (Mon, 01 Oct 2012)  * @requires fancyBox v2.0 or later  *  * Usage:  *     $(&quot;.fancybox&quot;).fancybox({  *         helpers : {  *             thumb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="fancybox&#x2F;helpers&#x2F;jquery.fancybox-thumbs">
+<meta property="og:url" content="https://joshuayingwhategr.github.io/2020/10/15/fancybox/helpers/jquery.fancybox-thumbs/index.html">
+<meta property="og:site_name" content="JoshuaYingWhatEgr Blogs">
+<meta property="og:description" content="&#x2F;*!  * Thumbnail helper for fancyBox  * version: 1.0.7 (Mon, 01 Oct 2012)  * @requires fancyBox v2.0 or later  *  * Usage:  *     $(&quot;.fancybox&quot;).fancybox({  *         helpers : {  *             thumb">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-10-15T03:18:44.736Z">
+<meta property="article:modified_time" content="2020-10-15T03:18:44.737Z">
+<meta property="article:author" content="JoshuaYingWhatEgr">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">JoshuaYingWhatEgr Blogs</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://joshuayingwhategr.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-fancybox/helpers/jquery.fancybox-thumbs" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/10/15/fancybox/helpers/jquery.fancybox-thumbs/" class="article-date">
+  <time datetime="2020-10-15T03:18:44.736Z" itemprop="datePublished">2020-10-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      fancybox/helpers/jquery.fancybox-thumbs
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+         /*!
+ * Thumbnail helper for fancyBox
+ * version: 1.0.7 (Mon, 01 Oct 2012)
+ * @requires fancyBox v2.0 or later
+ *
+ * Usage:
+ *     $(".fancybox").fancybox({
+ *         helpers : {
+ *             thumbs: {
+ *                 width  : 50,
+ *                 height : 50
+ *             }
+ *         }
+ *     });
+ *
+ */
+;(function ($) {
+	//Shortcut for fancyBox object
+	var F = $.fancybox;
+
+	//Add helper object
+	F.helpers.thumbs = {
+		defaults : {
+			width    : 50,       // thumbnail width
+			height   : 50,       // thumbnail height
+			position : 'bottom', // 'top' or 'bottom'
+			source   : function ( item ) {  // function to obtain the URL of the thumbnail image
+				var href;
+
+				if (item.element) {
+					href = $(item.element).find('img').attr('src');
+				}
+
+				if (!href && item.type === 'image' && item.href) {
+					href = item.href;
+				}
+
+				return href;
+			}
+		},
+
+		wrap  : null,
+		list  : null,
+		width : 0,
+
+		init: function (opts, obj) {
+			var that = this,
+				list,
+				thumbWidth  = opts.width,
+				thumbHeight = opts.height,
+				thumbSource = opts.source;
+
+			//Build list structure
+			list = '';
+
+			for (var n = 0; n < obj.group.length; n++) {
+				list += '<li><a style="width:' + thumbWidth + 'px;height:' + thumbHeight + 'px;" href="javascript:jQuery.fancybox.jumpto(' + n + ');"></a></li>';
+			}
+
+			this.wrap = $('<div id="fancybox-thumbs"></div>').addClass(opts.position).appendTo('body');
+			this.list = $('<ul>' + list + '</ul>').appendTo(this.wrap);
+
+			//Load each thumbnail
+			$.each(obj.group, function (i) {
+				var el   = obj.group[ i ],
+					href = thumbSource( el );
+
+				if (!href) {
+					return;
+				}
+
+				$("<img />").load(function () {
+					var width  = this.width,
+						height = this.height,
+						widthRatio, heightRatio, parent;
+
+					if (!that.list || !width || !height) {
+						return;
+					}
+
+					//Calculate thumbnail width/height and center it
+					widthRatio  = width / thumbWidth;
+					heightRatio = height / thumbHeight;
+
+					parent = that.list.children().eq(i).find('a');
+
+					if (widthRatio >= 1 && heightRatio >= 1) {
+						if (widthRatio > heightRatio) {
+							width  = Math.floor(width / heightRatio);
+							height = thumbHeight;
+
+						} else {
+							width  = thumbWidth;
+							height = Math.floor(height / widthRatio);
+						}
+					}
+
+					$(this).css({
+						width  : width,
+						height : height,
+						top    : Math.floor(thumbHeight / 2 - height / 2),
+						left   : Math.floor(thumbWidth / 2 - width / 2)
+					});
+
+					parent.width(thumbWidth).height(thumbHeight);
+
+					$(this).hide().appendTo(parent).fadeIn(300);
+
+				})
+				.attr('src',   href)
+				.attr('title', el.title);
+			});
+
+			//Set initial width
+			this.width = this.list.children().eq(0).outerWidth(true);
+
+			this.list.width(this.width * (obj.group.length + 1)).css('left', Math.floor($(window).width() * 0.5 - (obj.index * this.width + this.width * 0.5)));
+		},
+
+		beforeLoad: function (opts, obj) {
+			//Remove self if gallery do not have at least two items
+			if (obj.group.length < 2) {
+				obj.helpers.thumbs = false;
+
+				return;
+			}
+
+			//Increase bottom margin to give space for thumbs
+			obj.margin[ opts.position === 'top' ? 0 : 2 ] += ((opts.height) + 15);
+		},
+
+		afterShow: function (opts, obj) {
+			//Check if exists and create or update list
+			if (this.list) {
+				this.onUpdate(opts, obj);
+
+			} else {
+				this.init(opts, obj);
+			}
+
+			//Set active element
+			this.list.children().removeClass('active').eq(obj.index).addClass('active');
+		},
+
+		//Center list
+		onUpdate: function (opts, obj) {
+			if (this.list) {
+				this.list.stop(true).animate({
+					'left': Math.floor($(window).width() * 0.5 - (obj.index * this.width + this.width * 0.5))
+				}, 150);
+			}
+		},
+
+		beforeClose: function () {
+			if (this.wrap) {
+				this.wrap.remove();
+			}
+
+			this.wrap  = null;
+			this.list  = null;
+			this.width = 0;
+		}
+	}
+
+}(jQuery));
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://joshuayingwhategr.github.io/2020/10/15/fancybox/helpers/jquery.fancybox-thumbs/" data-id="ckgaethk1000hwo9kd2dldn0w" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/10/15/fancybox/helpers/jquery.fancybox-media/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          fancybox/helpers/jquery.fancybox-media
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/10/15/css/style/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">css/style</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Java/" style="font-size: 17.5px;">Java</a> <a href="/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/" style="font-size: 12.5px;">仓央嘉措菜</a> <a href="/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/" style="font-size: 15px;">吴主任的公众号</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" style="font-size: 15px;">多线程编程</a> <a href="/tags/%E8%A4%9A%E6%98%8E%E5%AE%87/" style="font-size: 10px;">褚明宇</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" style="font-size: 10px;">计算机基础</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 17.5px;">计算机网络</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/10/15/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/index/">tags/计算机网络/index</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/15/tags/Java/index/">tags/Java/index</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/15/tags/%E5%90%B4%E4%B8%BB%E4%BB%BB%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7/index/">tags/吴主任的公众号/index</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/15/tags/%E4%BB%93%E5%A4%AE%E5%98%89%E6%8E%AA%E8%8F%9C/index/">tags/仓央嘉措菜/index</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/15/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/index/">tags/多线程编程/index</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 JoshuaYingWhatEgr<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
